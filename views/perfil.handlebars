@@ -1,0 +1,86 @@
+<style>
+    body {
+        background: linear-gradient(135deg, #e0e7ef 0%, #b0c4de 100%);
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+</style>
+
+ {{> navbar}}
+<body> 
+    <div class="container-app">
+        {{> sidebar}}
+        <main class="main-content" style="background: linear-gradient(rgba(244, 248, 251, 0.671), rgba(176,196,222,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; border-radius: 16px; box-shadow: 0 4px 24px rgba(46,58,79,0.10);">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-name">
+                        {{#if user.datosPersonales.nombre}}
+                            {{user.datosPersonales.nombre}}
+                        {{else}}
+                            <em>Nombre no especificado</em>
+                        {{/if}}
+                    </div>
+                    <img class="profile-photo" src="{{user.fotoPerfilUrl}}" alt="Foto de perfil" onerror="this.src='https://ui-avatars.com/api/?name={{user.datospersonales.nombre}}&background=b0c4de&color=2c3e50&size=128';">
+                </div>
+                <div class="profile-info">
+                    <p><strong>Email:</strong> 
+                        {{#if user.email}}
+                            {{user.email}}
+                        {{else}}
+                            <em>Falta completar el email</em>
+                        {{/if}}
+                    </p>
+                    <p>
+                        <strong>Contraseña:</strong> ********
+                        <a href="/cambiar-pw" class="btn-app-link">Cambiar contraseña</a>
+                    </p>
+                    <p><strong>Teléfono:</strong>
+                        {{#if user.datosPersonales.telefono}}
+                            {{user.datosPersonales.telefono}}
+                        {{else}}
+                            <em>Falta completar el teléfono</em>
+                        {{/if}}
+                    </p>
+                    <p><strong>Dirección:</strong>
+                        {{#if user.datosPersonales.direccion}}
+                            {{user.datosPersonales.direccion}}
+                        {{else}}
+                            <em>Falta completar la dirección</em>
+                        {{/if}}
+                    </p>
+                    <p><strong>Fecha de nacimiento:</strong>
+                        {{#if user.datosPersonales.fechaNacimiento}}
+                        {{formatDate user.datosPersonales.fechaNacimiento "DD/MM/YYYY"}}
+                        {{else}}
+                        <em>Falta completar la fecha de nacimiento</em>
+                        {{/if}}
+                    </p>
+                    <p><strong>Género:</strong>
+                        {{#if user.datosPersonales.genero}}
+                            {{user.datosPersonales.genero}}
+                        {{else}}
+                            <em>Falta completar el género</em>
+                        {{/if}}
+                    </p>
+                    <p><strong>Cargo:</strong>
+                        {{#if user.datosPersonales.cargo}}
+                        {{user.datosPersonales.cargo}}
+                        {{else}}
+                        <em>Falta completar el cargo</em>
+                        {{/if}}
+                    </p>
+                    <p><strong>Domicilio:</strong>
+                        {{#if user.datosPersonales.domicilio}}
+                        {{user.datosPersonales.domicilio}}
+                        {{else}}
+                        <em>Falta completar el domicilio</em>
+                        {{/if}}
+                    </p>
+                    <!-- Agrega aquí más campos según los datos personales disponibles -->
+                </div>
+                <a href="/datos-personales" class="btn-app-primary">Editar perfil</a>
+            </div>
+        </main>
+    </div>
+</body>     

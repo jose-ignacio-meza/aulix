@@ -1,0 +1,33 @@
+<style>
+
+</style>
+{{> navbar}}
+<div class="container-app"> 
+    {{> sidebar}}
+    <main class="main-content" style="background: linear-gradient(rgba(244, 248, 251, 0.671), rgba(176,196,222,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; border-radius: 16px; box-shadow: 0 4px 24px rgba(46,58,79,0.10);">
+        <h2 class="form-title">Datos Personales</h2>
+        <form action="/datos-personales/guardar" method="POST" class="form-empresarial">
+
+            <input type="text" name="nombre" placeholder="Nombre" value="{{usuario.datosPersonales.nombre}}" required class="form-input" />
+            <input type="text" name="apellido" placeholder="Apellido" value="{{usuario.datosPersonales.apellido}}" required class="form-input" />
+            <input type="text" name="dni" placeholder="DNI" value="{{usuario.datosPersonales.dni}}" required class="form-input" />
+            <input type="date" name="fechaNacimiento" value="{{usuario.datosPersonales.fechaNacimiento}}" class="form-input" />
+            <input type="email" name="email" placeholder="Email" value="{{usuario.email}}" class="form-input" disabled />
+            <select name="genero" class="form-input" required>
+                <option value="" disabled {{#unless usuario.datosPersonales.genero}}selected{{/unless}}>Seleccione género</option>
+                <option value="hombre" {{#if (eq usuario.datosPersonales.genero "hombre")}}selected{{/if}}>Hombre</option>
+                <option value="mujer" {{#if (eq usuario.datosPersonales.genero "mujer")}}selected{{/if}}>Mujer</option>
+                <option value="hombre trans" {{#if (eq usuario.datosPersonales.genero "hombre trans")}}selected{{/if}}>Hombre trans</option>
+                <option value="mujer trans" {{#if (eq usuario.datosPersonales.genero "mujer trans")}}selected{{/if}}>Mujer trans</option>
+                <option value="no binario" {{#if (eq usuario.datosPersonales.genero "no binario")}}selected{{/if}}>No binario</option>
+                <option value="otro" {{#if (eq usuario.datosPersonales.genero "otro")}}selected{{/if}}>Otro</option>
+            </select>
+            <input type="text" name="domicilio" placeholder="Domicilio" value="{{usuario.datosPersonales.domicilio}}" class="form-input" />
+            <input type="text" name="telefono" placeholder="Teléfono" value="{{usuario.datosPersonales.telefono}}" class="form-input" />
+            <input type="text" name="cargo" placeholder="Cargo" value="{{usuario.datosPersonales.cargo}}" class="form-input" />
+            <input type="text" name="titulo" placeholder="Título" value="{{usuario.datosPersonales.titulo}}" class="form-input" />
+
+            <button type="submit" class="form-btn-app">Guardar</button>
+        </form>
+    </main>
+</div>

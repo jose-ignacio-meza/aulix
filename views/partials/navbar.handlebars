@@ -1,0 +1,133 @@
+<nav class="navbar">
+    <div class="navbar-content">
+        <input type="checkbox" id="menu-toggle" class="menu-toggle" />
+        <label for="menu-toggle" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        <ul class="menu">
+            <li>
+                <div class="profile-dropdown">
+                    <input type="checkbox" id="profile-toggle" class="profile-toggle" />
+                    <label for="profile-toggle" class="profile-icon">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="8" r="4" stroke="#fff" stroke-width="2"/>
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="#fff" stroke-width="2"/>
+                        </svg>
+                    </label>
+                    <ul class="dropdown-menu">
+                        <li><a href="/perfil">Ver perfil</a></li>
+                        <li><a href="/logout">Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+.navbar {
+    background: #22304a;
+    padding: 0.5rem 2rem;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+}
+.navbar-content {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.menu {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.hamburger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    margin-right: 1.5rem;
+}
+.hamburger span {
+    width: 28px;
+    height: 3px;
+    background: #2980b9;
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: 0.3s;
+}
+.menu-toggle {
+    display: none;
+}
+.profile-dropdown {
+    position: relative;
+}
+.profile-icon {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0.3rem;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+.profile-icon:hover {
+    background: #2c3e50;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 2.5rem;
+    background: #f4f8fb;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+    min-width: 160px;
+    z-index: 10;
+    padding: 0.5rem 0;
+}
+.dropdown-menu li {
+    list-style: none;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: #22304a;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.dropdown-menu a:hover {
+    background: #eaf1f8;
+}
+.profile-toggle {
+    display: none;
+}
+.profile-toggle:checked + .profile-icon + .dropdown-menu {
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu {
+        flex-direction: column;
+        background: #22304a;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 180px;
+        display: none;
+        box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+        border-radius: 0 0 8px 8px;
+    }
+    .menu li {
+        margin: 0.5rem 0;
+    }
+    .menu-toggle:checked ~ .menu {
+        display: flex;
+    }
+    .hamburger {
+        display: flex;
+    }
+}
+</style></svg></label>

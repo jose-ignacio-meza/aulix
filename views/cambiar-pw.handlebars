@@ -1,0 +1,23 @@
+{{!-- Importa la navbar --}}
+{{> navbar}}
+
+<div class="container-app" style="max-width: 400px; margin: 40px auto; background: #f5f8fa; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 32px;">
+    <h2 style="color: #2c3e50; text-align: center; margin-bottom: 24px;">Cambiar Contraseña</h2>
+    <form action="/cambiar-pw" method="POST">
+        <div class="form-group" style="margin-bottom: 18px;">
+            <label for="currentPassword" style="color: #34495e;">Contraseña Actual</label>
+            <input type="password" id="currentPassword" name="currentPassword" class="form-control" required style="width: 100%; padding: 8px; border: 1px solid #b2bec3; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 18px;">
+            <label for="newPassword" style="color: #34495e;">Nueva Contraseña</label>
+            <input type="password" id="newPassword" name="newPassword" class="form-control" required style="width: 100%; padding: 8px; border: 1px solid #b2bec3; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+            <label for="confirmPassword" style="color: #34495e;">Confirmar Nueva Contraseña</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required style="width: 100%; padding: 8px; border: 1px solid #b2bec3; border-radius: 4px;">
+        </div>
+        <button type="submit" style="width: 100%; background: #2980b9; color: #fff; border: none; padding: 10px 0; border-radius: 4px; font-size: 16px; cursor: pointer;">
+            Cambiar Contraseña
+        </button>
+    </form>
+</div>

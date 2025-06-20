@@ -1,0 +1,59 @@
+{{!-- listadoPlantillas.handlebars --}}
+<style>
+    .tituloEncabezado{
+        text-align: center;
+    }
+    /*Rediseño de main content en esta pagina*/
+    .main-content{
+        align-items:flex-start; justify-content: flex-start;
+    }
+    .botonPlantillaDesplegable{
+        margin: 0px;
+        color: blue;
+        text-decoration: none;
+    }
+</style>
+
+{{> navbar}}
+<body>
+    <div class="container-app"> 
+        {{> sidebar}}
+        <div class="main-content">
+            <div class="tituloEncabezado">
+                <h1>Listado de Plantillas</h1>
+            </div>
+
+            {{#if plantillas.length}}
+                <div class="accordion" id="plantillasAccordion">
+                    {{#each plantillas}}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading-{{@index}}">
+                                <button class="btn btn-link botonPlantillaDesplegable d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{@index}}" aria-expanded="false" aria-controls="collapse-{{@index}}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down me-2" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                                    </svg>
+                                    {{capitalize this.tipo}}
+                                </button>
+                            </h2>
+                            <div id="collapse-{{@index}}" class="accordion-collapse collapse" aria-labelledby="heading-{{@index}}" data-bs-parent="#plantillasAccordion">
+                                <div class="accordion-body">
+                                    <form>
+                                        {{#each this.Preguntas}}
+                                            <div class="mb-3">
+                                                <label class="form-label">{{this.label}}</label>
+                                                <input type="{{this.tipo}}" class="form-control" value="{{this.valor}}" readonly>
+                                            </div>
+                                        {{/each}}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                </div>
+            {{else}}
+                <p>No hay plantillas disponibles.</p>
+            {{/if}}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>

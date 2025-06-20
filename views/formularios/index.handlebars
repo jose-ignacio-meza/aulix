@@ -1,0 +1,102 @@
+<style>
+body {
+    background: #f4f8fb;
+    color: #22334d;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.main-content {
+    padding: 2rem;
+}
+.crear-formulario-botones .btn {
+    background: #3a6ea5;
+    color: #fff;
+    border: none;
+    margin-right: 1rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.crear-formulario-botones .btn:hover {
+    background: #22334d;
+}
+section {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(34,51,77,0.06);
+}
+h1, h2 {
+    color: #22334d;
+}
+</style>
+
+ {{> navbar}}
+<body> 
+    <div class="container-app">
+        {{> sidebar}}
+        <div class="main-content">
+            <div class="formularios-container">
+                <h1>Formularios</h1>
+
+                <!-- Botones para crear nuevos formularios -->
+                <div class="crear-formulario-botones"> 
+                    <a href="/formularios/nuevo?tipo=planificacion" class="btn btn-primary">Nuevo Planificación</a>
+                    <a href="/formularios/nuevo?tipo=declaracion" class="btn btn-primary">Nueva Declaración Jurada</a>
+                    <a href="/formularios/nuevo?tipo=acta" class="btn btn-primary">Nueva Acta</a>
+                </div>
+
+                <!-- Listado de Planificaciones -->
+                <section>
+                    <h2>Planificaciones</h2>
+                    {{#if $payload.planificaciones.length}}
+                        <ul>
+                            {{#each $payload.planificaciones}}
+                                <li>
+                                    <a href="/formularios/{{this.id}}">{{this.nombre}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    {{else}}
+                        <p>No hay planificaciones creadas.</p>
+                    {{/if}}
+                </section>
+
+                <!-- Listado de Declaraciones Juradas -->
+                <section>
+                    <h2>Declaraciones Juradas</h2>
+                    {{#if $payload.declaraciones.length}}
+                        <ul>
+                            {{#each $payload.declaraciones}}
+                                <li>
+                                    <a href="/formularios/{{this.id}}">{{this.nombre}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    {{else}}
+                        <p>No hay declaraciones juradas creadas.</p>
+                    {{/if}}
+                </section>
+
+                <!-- Listado de Actas -->
+                <section>
+                    <h2>Actas</h2>
+                    {{#if $payload.actas.length}}
+                        <ul>
+                            {{#each $payload.actas}}
+                                <li>
+                                    <a href="/formularios/{{this.id}}">{{this.nombre}}</a>
+                                </li>
+                            {{/each}}
+                        </ul>
+                    {{else}}
+                        <p>No hay actas creadas.</p>
+                    {{/if}}
+                </section>
+            </div>
+        </div>
+    </div>
+</body>

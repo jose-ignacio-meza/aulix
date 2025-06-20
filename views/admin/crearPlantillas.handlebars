@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <meta charset="UTF-8">
+    <title>Crear Plantilla de Formulario</title>
+    <style>
+        .formCrearPlantilla{width: 80%;}
+        .nombrePlantilla{
+            font-size: 1.3em;
+            font-weight: 600;
+            border: 2px solid #234567;
+            border-radius: 6px;
+            padding: 0.7em 1em;
+            margin-bottom: 1.5em;
+            background: #f7faff;
+            color: #234567;
+            box-shadow: 0 2px 8px rgba(35,69,103,0.07);
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        .nombrePlantilla:focus {
+            border-color: #1a3550;
+            box-shadow: 0 0 0 2px #b3d1f7;
+            background: #fff;
+        }
+        .preguntasListado{width: 80%;}
+        .input-group { margin-bottom: 1em; }
+        .input-group label { display: block; margin-bottom: 0.2em; }
+        .input-group input, .input-group select { width: 100%; }
+        #preguntas-list { margin-top: 2em; }
+        .pregunta-item { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; }
+        .contenedorPregunta{ display: flex; justify-content: space-between;}
+        .infoPregunta{display: flex; flex-direction: row;}
+        .botonesPregunta{display: flex; flex-direction: column;}
+        .btn-crearPlantilla {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 0.5rem;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.2s;
+        }
+
+    </style>
+</head>
+<body>
+    {{> navbar}}
+    <div class="container-app"> 
+        {{> sidebar}}
+        <div class="main-content" style="padding: 40px; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.07);">
+            <h1 style="color: #234567; font-weight: 600; margin-bottom: 32px;">Crear Plantilla de Formulario</h1>
+            <p>Utiliza este formulario para crear una plantilla de formulario personalizada. Puedes agregar preguntas dinámicamente y guardarlas para su uso posterior.</p>
+            <form class="formCrearPlantilla" id="formulario-plantilla" method="POST" action="/admin/guardarPlantilla">
+                <input class="nombrePlantilla" type="text" id="tipoPlantilla" name="tipoPlantilla" placeholder="Nombre de la plantilla" required>
+                <div id="inputs-dinamicos"></div>
+                <input type="hidden" name="preguntas" id="preguntas-json">
+                <br><br>
+                <button type="button" id="agregar-input" class="btn">
+                    <i data-feather="plus-circle"></i> Agregar nueva pregunta
+                </button>
+                <button type="submit" class="btn">
+                    <i data-feather="save"></i> Guardar Plantilla
+                </button>
+            </form>
+
+            <div class="preguntasListado" id="preguntas-list"></div>
+        </div>
+    </div>
+    <script>
+        let preguntas = [];
+
+        function renderPreguntas() {
+            const list = document.getElementById('preguntas-list');
+            list.innerHTML = '';
+            preguntas.forEach((p, idx) => {
+                const div = document.createElement('div');
+                div.className = 'pregunta-item';
+                div.setAttribute('data-index', idx); // útil si se necesita
+
+                div.innerHTML = `
+                <div class="contenedorPregunta">
+                    <div class="infoPregunta">
+                        <div> <strong>Pregunta ${idx + 1}</strong> </div>
+                        <div> <b>Label:</b> ${p.label} </div>
+                        <div> <b>Type:</b> ${p.type} </div>
+                        <div> <b>Name:</b> ${p.name} </div>
+                        <div> <b>ID:</b> ${p.id} </div>
+                        <div> <b>Placeholder:</b> ${p.placeholder} </div>
+                    </div>
+                    <div class="botonesPregunta">
+                        <button class="btn-crearPlantilla" type="button" onclick="editarPregunta(${idx})">
+                            <i data-feather="edit"></i>Editar
+                        </button>
+                        <button class="btn-crearPlantilla" type="button" onclick="eliminarPregunta(${idx})">
+                            <i data-feather="trash-2"></i>Eliminar
+                        </button>
+                    </div>
+                </div>
+                `;
+                
+                list.appendChild(div);
+            });
+
+            feather.replace(); // Re-render icons
+            document.getElementById('preguntas-json').value = JSON.stringify(preguntas);
+            }
+
+        function eliminarPregunta(idx) {
+            preguntas.splice(idx, 1);
+            renderPreguntas();
+        }
+
+        function editarPregunta(idx) {
+            const pregunta = preguntas[idx];
+            // Crea un formulario de edición (puedes hacerlo como un modal, o reemplazar el div actual)
+            const div = document.createElement('div');
+            div.className = 'input-group';
+            div.innerHTML = `
+                <label>Label de la pregunta: <input type="text" class="label-input" value="${pregunta.label}" required></label>
+                <label>Tipo de input:
+                    <select class="type-input">
+                        <option value="text" ${pregunta.type === 'text' ? 'selected' : ''}>Texto</option>
+                        <option value="number" ${pregunta.type === 'number' ? 'selected' : ''}>Número</option>
+                        <option value="email" ${pregunta.type === 'email' ? 'selected' : ''}>Email</option>
+                        <option value="date" ${pregunta.type === 'date' ? 'selected' : ''}>Fecha</option>
+                        <option value="checkbox" ${pregunta.type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                        <option value="radio" ${pregunta.type === 'radio' ? 'selected' : ''}>Radio</option>
+                        <option value="textarea" ${pregunta.type === 'textarea' ? 'selected' : ''}>Textarea</option>
+                    </select>
+                </label>
+                <label>Name: <input type="text" class="name-input" value="${pregunta.name}" required></label>
+                <label>ID: <input type="text" class="id-input" value="${pregunta.id}" required></label>
+                <label>Placeholder: <input type="text" class="placeholder-input" value="${pregunta.placeholder}" required></label>
+                <button type="button" class="guardar-edicion">
+                    <i data-feather="save"></i> Guardar Cambios
+                </button>
+                <button type="button" class="cancelar-edicion">
+                    <i data-feather="x-circle"></i> Cancelar
+                </button>
+            `;
+            feather.replace();
+            // Reemplaza el div de la pregunta por el formulario de edición
+            const preguntaDiv = document.querySelectorAll('.pregunta-item')[idx];
+            preguntaDiv.parentNode.replaceChild(div, preguntaDiv);
+
+            div.querySelector('.guardar-edicion').addEventListener('click', function() {
+                const label = div.querySelector('.label-input').value.trim();
+                const type = div.querySelector('.type-input').value;
+                const name = div.querySelector('.name-input').value.trim();
+                const id = div.querySelector('.id-input').value.trim();
+                const placeholder = div.querySelector('.placeholder-input').value.trim();
+
+                if (!label || !type || !name || !id || !placeholder) {
+                    alert('Todos los campos son obligatorios.');
+                    return;
+                }
+
+                preguntas[idx] = { label, type, name, id, placeholder };
+                renderPreguntas();
+            });
+
+            div.querySelector('.cancelar-edicion').addEventListener('click', function() {
+                renderPreguntas();
+            });
+        }
+        window.editarPregunta = editarPregunta;
+
+        document.getElementById('agregar-input').addEventListener('click', function() {
+            const container = document.createElement('div');
+            container.className = 'input-group';
+            container.innerHTML = `
+                <label>Label de la pregunta: <input type="text" class="label-input" required></label>
+                <label>Tipo de input:
+                    <select class="type-input">
+                        <option value="text">Texto</option>
+                        <option value="number">Número</option>
+                        <option value="email">Email</option>
+                        <option value="date">Fecha</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="radio">Radio</option>
+                        <option value="textarea">Textarea</option>
+                    </select>
+                </label>
+                <label>Name: <input type="text" class="name-input" required></label>
+                <label>ID: <input type="text" class="id-input" required></label>
+                <label>Placeholder: <input type="text" class="placeholder-input" required></label>
+                <button type="button" class="guardar-pregunta">
+                    <i data-feather="plus-circle"></i> Guardar Pregunta
+                </button>
+            `;
+            feather.replace();
+            document.getElementById('inputs-dinamicos').appendChild(container);
+
+            container.querySelector('.guardar-pregunta').addEventListener('click', function() {
+                const label = container.querySelector('.label-input').value.trim();
+                const type = container.querySelector('.type-input').value;
+                const name = container.querySelector('.name-input').value.trim();
+                const id = container.querySelector('.id-input').value.trim();
+                const placeholder = container.querySelector('.placeholder-input').value.trim();
+
+                if (!label || !type || !name || !id  || !placeholder) {
+                    alert('Todos los campos son obligatorios.');
+                    return;
+                }
+
+                preguntas.push({ label, type, name, id, placeholder});
+                renderPreguntas();
+                container.remove();
+            });
+        });
+
+        document.getElementById('formulario-plantilla').addEventListener('submit', async function(e) {
+            if (preguntas.length === 0) {
+                e.preventDefault();
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Debe agregar al menos una pregunta.',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+            e.preventDefault(); // Detiene el envío por defecto
+
+            const nombrePlantilla = document.getElementById('tipoPlantilla').value.trim();
+
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¿Deseas crear la nueva plantilla con nombre "${nombrePlantilla}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, crear',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (result.isConfirmed) {
+
+                e.target.submit(); // Envía el formulario si el usuario confirma
+            }
+        });
+        feather.replace();
+        window.eliminarPregunta = eliminarPregunta;
+        Sortable.create(document.getElementById('preguntas-list'), {
+            animation: 150,
+            onEnd: function (evt) {
+                // Reordenar el array `preguntas` para reflejar el nuevo orden
+                const movedItem = preguntas.splice(evt.oldIndex, 1)[0];
+                preguntas.splice(evt.newIndex, 0, movedItem);
+                document.getElementById('preguntas-json').value = JSON.stringify(preguntas);
+            }
+        });
+    </script>
+</body>
+</html>

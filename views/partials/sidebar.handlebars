@@ -1,0 +1,141 @@
+<style>
+    :root {
+        --primary: #2e3a4f;
+        --secondary: #4f6d7a;
+        --accent: #b0c4de;
+        --background: #f4f8fb;
+        --text: #1a232e;
+    }
+    .sidebar {
+        background: var(--primary);
+        color: #fff;
+        width: 240px;
+        min-width: 200px;
+        padding: 2rem 1rem;
+        transition: transform 0.3s;
+    }
+    .sidebar h3 {
+        margin-top: 0;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+    .sidebar li {
+        margin: 1rem 0;
+    }
+    .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 0.5rem;
+        border-radius: 4px;
+        display: block;
+        transition: background 0.2s;
+    }
+    .sidebar a:hover {
+        background: var(--secondary);
+    }
+    .sidebar-toggle {
+        display: none;
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 1001;
+    }
+    @media (max-width: 900px) {
+        .sidebar {
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+            transform: translateX(-100%);
+            z-index: 1000;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .sidebar-toggle {
+            display: block;
+        }
+    }
+</style>
+<nav class="sidebar" id="sidebar">
+    <h3>Menú</h3>
+    
+    {{#if (eq usuario.rol 'admin')}}
+        <ul>
+            <li>
+            <a href="/admin/usuarios">
+                <i data-feather="users"></i>
+                Usuarios
+            </a>
+            </li>
+            <li>
+            <a href="/admin/crearUsuario">
+                <i data-feather="user-plus"></i>
+                Crear Usuario
+            </a>
+            </li>
+            <li>
+            <a href="/admin/editarUsuario">
+                <i data-feather="user-check"></i>
+                Editar Usuario
+            </a>
+            </li>
+            <li>
+                <a href="/admin/crearPlantilla">
+                    <i data-feather="file-plus"></i>
+                    Crear Plantilla
+                </a>
+            </li>
+        </ul>
+    {{else}}
+        <ul>
+            <li>
+                <a href="/">
+                    <i data-feather="home"></i>
+                    Inicio
+                </a>
+            </li>
+            <li>
+                <a href="/formularios">
+                    <i data-feather="file-text"></i>
+                    Formularios Creados
+                </a>
+            </li>
+            <li>
+                <a href="/establecimientos">
+                    <i data-feather="map-pin"></i>
+                    Establecimientos
+                </a>
+            </li>
+            <li>
+                <a href="/perfil">
+                    <i data-feather="settings"></i>
+                    Configuración
+                </a>
+            </li>
+            <li>
+                <a href="/logout">
+                    <i data-feather="log-out"></i>
+                    Cerrar sesión
+                </a>
+            </li>
+        </ul>
+    {{/if}}
+</nav>
+<script src="https://unpkg.com/feather-icons"></script>
+<script>
+    feather.replace()
+</script>

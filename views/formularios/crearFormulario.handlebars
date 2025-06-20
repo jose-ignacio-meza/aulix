@@ -1,0 +1,28 @@
+{{> navbar}}
+<body style="background-color: #f4f8fb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div class="container-app" style="display: flex; min-height: 100vh;">
+        {{> sidebar}}
+        <div class="main-content" style="flex: 1; padding: 40px 60px; background: #fff; border-radius: 12px; margin: 40px 0 40px 40px; box-shadow: 0 4px 24px rgba(0,0,0,0.07);">
+            <h1 style="color: #234567; font-weight: 600; margin-bottom: 32px;">Completar Formulario: {{tipo}}</h1>
+            <form class="CrearFormulario" action="/formularios/guardar" method="POST">
+                {{#each formulario.Preguntas}}
+                    <div class="form-group" style="margin-bottom: 28px;">
+                        <label for="{{this.id}}" style="color: #345678; font-weight: 500; margin-bottom: 8px; display: block;">{{this.label}}</label>
+                        <input
+                            type="text"
+                            id="{{this.id}}"
+                            name="{{this.name}}"
+                            placeholder="{{this.placeholder}}"
+                            class="form-control"
+                            required
+                            style="width: 100%; padding: 12px; border: 1px solid #b0c4d6; border-radius: 6px; background: #f7fafc; color: #234567; font-size: 1rem;"
+                        />
+                    </div>
+                {{/each}}
+                <button type="submit" class="btn btn-primary" style="background: #234567; border: none; padding: 12px 32px; border-radius: 6px; color: #fff; font-weight: 600; font-size: 1rem; transition: background 0.2s;">
+                    Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+</body>

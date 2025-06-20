@@ -1,0 +1,110 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido - Creación de Formularios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    {{> navbar}}
+    <button class="sidebar-toggle" onclick="toggleSidebar()">&#9776;</button>
+    <div class="container-app"> 
+        {{> sidebar}}
+        {{#if (eq usuario.rol 'admin')}}
+        <main class="main-content" style="">
+            <div class="welcome-card" id="welcomeCard">
+                <h2>Bienvenido{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}</h2>
+                <p>Rol: {{usuario.rol}}</p>
+                <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
+                <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
+            </div>
+            <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
+                <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
+                    ¿Qué desea Administrar hoy{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}?
+                </h2>
+                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/usuarios'"> Usuarios </button>
+                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/plantillas'"> Plantillas </button>
+                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/otros'"> Otros </button>
+            </div>
+            <script>
+                const comenzarbtn = document.getElementById('comenzarbtn');
+                const welcomeCard = document.getElementById('welcomeCard');
+                const opciones = document.getElementById('opciones');
+
+                comenzarbtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Animar ocultar welcome-card
+                    welcomeCard.style.transition = 'opacity 0.5s, transform 0.5s';
+                    welcomeCard.style.opacity = '0';
+                    welcomeCard.style.transform = 'translateY(-30px)';
+                    setTimeout(() => {
+                        welcomeCard.style.display = 'none';
+                        // Animar mostrar opciones
+                        opciones.style.display = 'block';
+                        setTimeout(() => {
+                            opciones.style.opacity = '1';
+                            opciones.style.pointerEvents = 'auto';
+                            opciones.style.transform = 'translateY(0)';
+                            opciones.scrollIntoView({ behavior: 'smooth' });
+                        }, 10);
+                    }, 500);
+                });
+            </script>
+        </main>
+        {{else}}
+        <main class="main-content" style="background: linear-gradient(rgba(244, 248, 251, 0.671), rgba(176,196,222,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; border-radius: 16px; box-shadow: 0 4px 24px rgba(46,58,79,0.10);">
+            <div class="welcome-card" id="welcomeCard">
+                <h2>Bienvenido, {{usuario.datosPersonales.nombre}}</h2>
+                <p>Rol: {{usuario.rol}}</p>
+                <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
+                <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
+            </div>
+            <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
+                <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
+                    ¿Qué desea hacer hoy, {{usuario.datosPersonales.nombre}}?
+                </h2>
+                <button class="btn" style="margin: 0.5rem;">Planificación</button>
+                <button class="btn" style="margin: 0.5rem;">Declaración Jurada</button>
+                <button class="btn" style="margin: 0.5rem;">Otros Documentos</button>
+            </div>
+            <script>
+                const comenzarbtn = document.getElementById('comenzarbtn');
+                const welcomeCard = document.getElementById('welcomeCard');
+                const opciones = document.getElementById('opciones');
+
+                comenzarbtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Animar ocultar welcome-card
+                    welcomeCard.style.transition = 'opacity 0.5s, transform 0.5s';
+                    welcomeCard.style.opacity = '0';
+                    welcomeCard.style.transform = 'translateY(-30px)';
+                    setTimeout(() => {
+                        welcomeCard.style.display = 'none';
+                        // Animar mostrar opciones
+                        opciones.style.display = 'block';
+                        setTimeout(() => {
+                            opciones.style.opacity = '1';
+                            opciones.style.pointerEvents = 'auto';
+                            opciones.style.transform = 'translateY(0)';
+                            opciones.scrollIntoView({ behavior: 'smooth' });
+                        }, 10);
+                    }, 500);
+                });
+            </script>
+        </main>
+        {{/if}}
+    </div>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        // Cierra la barra lateral al hacer clic fuera de ella en móvil
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.sidebar-toggle');
+            if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+    </script>
+</body>
