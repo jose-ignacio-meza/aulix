@@ -8,7 +8,8 @@ const router = Router();
 // Rutas protegidas por el middleware soloAdmin
 router.get('/index', soloAdmin, adminController.index);
 router.get('/usuarios', soloAdmin, adminController.listarUsuarios);
-router.post('/usuarios', soloAdmin, adminController.crearUsuario);
+router.get('/crearUsuario', soloAdmin, adminController.mostrarCrearUsuario);
+router.post('/crearUsuario', soloAdmin, adminController.crearUnUsuario);
 router.put('/usuarios/:id', soloAdmin, adminController.editarUsuario);
 router.get('/crearPlantilla', soloAdmin, plantillaController.mostrarCrearPlantilla);
 router.post('/guardarPlantilla', soloAdmin, plantillaController.guardarPlantilla);

@@ -1,9 +1,33 @@
 // DAO/usuario.dao.js
 import UsuarioModel from './models/usuario.model.js';
 
-export const crearUsuario = async (datos) => {
+/**
+ * Crea un nuevo usuario en la base de datos utilizando el modelo UsuarioModel.
+ *
+ * @async
+ * @function crearUsuarioDAO
+ * @param {Object} datos - Objeto con los datos del usuario a crear. Debe contener las propiedades requeridas por el modelo UsuarioModel, por ejemplo:
+ *   {
+ *     nombre: 'Juan',
+ *     email: 'juan@email.com',
+ *     password: 'contraseñaSegura123'
+ *     // ...otros campos según el esquema del modelo
+ *   }
+ * @returns {Promise<Object>} El usuario creado.
+ * @throws {Error} Si ocurre un error al crear el usuario.
+ *
+ * @example
+ * const nuevoUsuario = await crearUsuarioDAO({
+ *   nombre: 'Ana',
+ *   email: 'ana@email.com',
+ *   password: 'miPassword123'
+ * });
+ */
+export const crearUsuarioDAO = async (datos) => {
   try {
-    return await UsuarioModel.create(datos);
+    console.log('llego al dao');
+    const usuario = new UsuarioModel(datos);
+    return await usuario.save();
   } catch (error) {
     console.error("Error creando usuario:", error);
     throw error;

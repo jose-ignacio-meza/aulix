@@ -1,4 +1,6 @@
-import { getUsuarioPorId } from "../services/usuario.service.js";
+import { getUsuarioPorId,getAllUsuarios, crearUsuario,eliminarUnUsuario } from "../services/usuario.service.js";
+import bcrypt from 'bcrypt';
+
 
 const index = (req, res) => {
     // Renderizar la vista principal del panel de administración
@@ -24,18 +26,39 @@ const mostrarUsuario = async (req, res) => {
 // Listar todos los usuarios
 const listarUsuarios = async (req, res) => {
     try {
-        const usuarios = await import("../services/usuario.service.js").then(m => m.getTodosUsuarios());
-        res.json(usuarios);
+        const usuarios = await getAllUsuarios();
+        res.status(200).render('admin/listadoUsuarios', { usuarios:usuarios.listadoUsuarios, message:usuarios.message });
     } catch (error) {
-        res.status(500).json({ message: 'Error al listar usuarios' });
+        res.status(500).json({ message: 'Error al listar usuariosss' });
     }
 };
+const mostrarCrearUsuario = async( req,res)=>{
+    try{
+        res.status(200).render('admin/crearUsuario');
+    }catch(error){
+        res.status(500).send({message:error})
+    }
+}
 
 // Crear un usuario
-const crearUsuario = async (req, res) => {
+const crearUnUsuario = async (req, res) => {
     try {
-        const datos = req.body;
-        const nuevoUsuario = await import("../services/usuario.service.js").then(m => m.crearUsuario(datos));
+        const {nombre,email,password} = req.body;
+        const datosPersonales = {
+                nombre:nombre,
+                apellido:"",
+                dni:"",
+                telefono:"",
+                domicilio:"",
+                fechaNacimiento:null,
+                genero:"",
+                cargo:"",
+                titulo:""
+            };
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const datos ={email,password:hashedPassword,datosPersonales}
+        console.log("datos:", datos)
+        const nuevoUsuario = await crearUsuario(datos);
         res.status(201).json(nuevoUsuario);
     } catch (error) {
         res.status(500).json({ message: 'Error al crear usuario' });
@@ -46,7 +69,7 @@ const crearUsuario = async (req, res) => {
 const eliminarUsuario = async (req, res) => {
     try {
         const { id } = req.params;
-        const eliminado = await import("../services/usuario.service.js").then(m => m.eliminarUsuario(id));
+        const eliminado = await eliminarUnUsuario(id);
         if (!eliminado) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
@@ -91,7 +114,8 @@ export {
     index,
     mostrarUsuario,
     listarUsuarios,
-    crearUsuario,
+    mostrarCrearUsuario,
+    crearUnUsuario,
     eliminarUsuario,
     cambiarContrasena,
     editarUsuario
