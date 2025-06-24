@@ -10,7 +10,12 @@ router.get('/index', soloAdmin, adminController.index);
 router.get('/usuarios', soloAdmin, adminController.listarUsuarios);
 router.get('/crearUsuario', soloAdmin, adminController.mostrarCrearUsuario);
 router.post('/crearUsuario', soloAdmin, adminController.crearUnUsuario);
-router.put('/usuarios/:id', soloAdmin, adminController.editarUsuario);
+router.post('/eliminarUsuario', soloAdmin, adminController.eliminarUsuario)
+router.post('/darDeAltaUsuario', soloAdmin, adminController.darDeAltaUsuario)
+router.get('/editarUsuario', soloAdmin , adminController.mostrarEditarUsuario);
+router.post('/editarUsuario', soloAdmin, adminController.editarUsuario);
+
+// Rutas para platnillas
 router.get('/crearPlantilla', soloAdmin, plantillaController.mostrarCrearPlantilla);
 router.post('/guardarPlantilla', soloAdmin, plantillaController.guardarPlantilla);
 router.get('/plantillas/:tipo', soloAdmin, plantillaController.obtenerPlantilla);

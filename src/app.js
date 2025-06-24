@@ -14,6 +14,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Para analizar datos de formularios (x-www-form-urlencoded)
 app.use(express.urlencoded({ extended: true }));
 
 // Servir archivos estáticos

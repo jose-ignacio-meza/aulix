@@ -23,6 +23,7 @@ const UsuarioSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   rol: { type: String, enum: ['admin', 'cliente'], default: 'cliente' },
+  eliminado:{type: Date, default: null },
   datosPersonales: datosPersonalesSchema
 });
 

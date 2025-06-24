@@ -38,18 +38,38 @@
                 <h1>Listado de Usuarios</h1>
             </div>
             
-            <p>Total de usuarios: {{usuarios.length}}</p>
+            <p>Total de usuarios: {{usuarios.usuarios.length}}</p>
             <ul class="user-list list-group list-group-numbered">
-                {{#each usuarios}}
+                {{#each usuarios.usuarios}}
                     <li class="list-group-item">
                         <span>{{this.email}}</span>
                         <span class="user-actions">
-                            <a href="/admin/deleteUsuario/{{this._id}}">
-                                <button class="btn btn-danger btn-sm">Eliminar</button>
-                            </a>
-                            <a href="/admin/uptdateUsuario/{{this._id}}">
-                                <button class="btn btn-primary btn-sm">Modificar</button>
-                            </a>
+                            <form action="/admin/eliminarUsuario" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="{{this._id}}">
+                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                            <form action="/admin/editarUsuario" method="GET" style="display:inline;">
+                                <input type="hidden" name="id" value="{{this._id}}">
+                                <button type="submit" class="btn btn-primary btn-sm">Modificar</button>
+                            </form>
+                        </span>
+                    </li>
+                {{/each}}
+            </ul>
+            <p>Total de usuarios: {{usuarios.usuariosEliminados.length}}</p>
+            <ul class="user-list list-group list-group-numbered">
+                {{#each usuarios.usuariosEliminados}}
+                    <li class="list-group-item">
+                        <span>{{this.email}}</span>
+                        <span class="user-actions">
+                            <form action="/admin/darDeAltaUsuario" method="POST" style="display:inline;">
+                                <input type="hidden" name="id" value="{{this._id}}">
+                                <button type="submit" class="btn btn-danger btn-sm">Dar De alta</button>
+                            </form>
+                            <form action="/admin/editarUsuario" method="GET" style="display:inline;">
+                                <input type="hidden" name="id" value="{{this._id}}">
+                                <button type="submit" class="btn btn-primary btn-sm">Modificar</button>
+                            </form>
                         </span>
                     </li>
                 {{/each}}

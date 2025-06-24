@@ -1,31 +1,9 @@
 // DAO/usuario.dao.js
 import UsuarioModel from './models/usuario.model.js';
 
-/**
- * Crea un nuevo usuario en la base de datos utilizando el modelo UsuarioModel.
- *
- * @async
- * @function crearUsuarioDAO
- * @param {Object} datos - Objeto con los datos del usuario a crear. Debe contener las propiedades requeridas por el modelo UsuarioModel, por ejemplo:
- *   {
- *     nombre: 'Juan',
- *     email: 'juan@email.com',
- *     password: 'contraseñaSegura123'
- *     // ...otros campos según el esquema del modelo
- *   }
- * @returns {Promise<Object>} El usuario creado.
- * @throws {Error} Si ocurre un error al crear el usuario.
- *
- * @example
- * const nuevoUsuario = await crearUsuarioDAO({
- *   nombre: 'Ana',
- *   email: 'ana@email.com',
- *   password: 'miPassword123'
- * });
- */
+
 export const crearUsuarioDAO = async (datos) => {
   try {
-    console.log('llego al dao');
     const usuario = new UsuarioModel(datos);
     return await usuario.save();
   } catch (error) {
@@ -39,7 +17,6 @@ export const buscarUsuarioPorEmail = async (email) => {
     console.log("Buscando usuario con email:", email);
     return await UsuarioModel.findOne({ email });
   } catch (error) {
-    console.error("Error buscando usuario por email:", error);
     throw error;
   }
 };
@@ -56,7 +33,13 @@ export const actualizarUsuario = async (id, datos) => {
 
 export const eliminarUsuario = async (id) => {
   try {
-    return await UsuarioModel.findByIdAndDelete(id);
+    const resultado = await UsuarioModel.findByIdAndUpdate(id,{ eliminado: new Date() },{ new: true });
+    if(!resultado){
+      console.log('no hay usuario con es id');
+      return {errorMessage:"fallo la consulta y no se encontro el usuario"};
+    }
+    console.log("usuario encontrado: ", resultado);
+    return resultado 
   } catch (error) {
     console.error("Error eliminando usuario:", error);
     throw error;
@@ -74,9 +57,17 @@ export const listarUsuarios = async () => {
 
 export const buscarUsuarioPorId = async (id) => {
   try {
-    return await UsuarioModel.findById(id);
+    return await UsuarioModel.findById(id).lean();
   } catch (error) {
     console.error("Error buscando usuario por ID:", error);
     throw error;
   }
 };
+
+export const darDeAltaUsuario = async(id)=>{
+  try{
+    return await UsuarioModel.findByIdAndUpdate(id,{ eliminado: null },{ new: true });
+  }catch(error){
+    throw error;
+  }
+}
