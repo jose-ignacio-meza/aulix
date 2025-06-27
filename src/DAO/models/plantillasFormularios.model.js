@@ -7,7 +7,13 @@ const PreguntaSchema = new mongoose.Schema({
     name: { type: String, required: true },
     type: { type: String, required: true },
     label: { type: String, required: true },
-    placeholder: { type: String, required: true }
+    placeholder: { type: String, required: true },
+    options: { type: [ 
+        { 
+            label: { type: String, required: true },
+            value: { type: String, required: true }
+        }
+    ], default: undefined }
 }, { _id: false });
 
 const PlantillaFormularioSchema = new mongoose.Schema({

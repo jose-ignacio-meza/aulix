@@ -101,13 +101,19 @@
                             <i data-feather="trash-2"></i>Eliminar
                         </button>
                     </div>
-                </div>
-                `;
+                </div>`
+                if (p.options && Array.isArray(p.options)) {
+                    div.innerHTML += `<div><b>Opciones:</b><ul>`;
+                    p.options.forEach(opt => {
+                        div.innerHTML += `<li>${opt.label} (${opt.value})</li>`;
+                    });
+                    div.innerHTML += `</ul></div>`;
+                };
                 
                 list.appendChild(div);
             });
 
-            feather.replace(); // Re-render icons
+            feather.replace(); //Re-render icons
             document.getElementById('preguntas-json').value = JSON.stringify(preguntas);
             }
 
@@ -130,10 +136,17 @@
                         <option value="email" ${pregunta.type === 'email' ? 'selected' : ''}>Email</option>
                         <option value="date" ${pregunta.type === 'date' ? 'selected' : ''}>Fecha</option>
                         <option value="checkbox" ${pregunta.type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
-                        <option value="radio" ${pregunta.type === 'radio' ? 'selected' : ''}>Radio</option>
+                        <option value="select" ${pregunta.type === 'select' ? 'selected' : ''}>select</option>
                         <option value="textarea" ${pregunta.type === 'textarea' ? 'selected' : ''}>Textarea</option>
                     </select>
                 </label>
+                <div class="opciones-container" style="display: none;">
+                    <label>Opciones para el select:</label>
+                    <div class="opciones-lista"></div>
+                    <button type="button" class="btn-agregar-opcion">
+                        <i data-feather="plus"></i> Agregar opción
+                    </button>
+                </div>
                 <label>Name: <input type="text" class="name-input" value="${pregunta.name}" required></label>
                 <label>ID: <input type="text" class="id-input" value="${pregunta.id}" required></label>
                 <label>Placeholder: <input type="text" class="placeholder-input" value="${pregunta.placeholder}" required></label>
@@ -144,6 +157,46 @@
                     <i data-feather="x-circle"></i> Cancelar
                 </button>
             `;
+
+            const typeInput = div.querySelector('.type-input');
+            const opcionesContainer = div.querySelector('.opciones-container');
+            const opcionesLista = div.querySelector('.opciones-lista');
+
+            if (pregunta.type === 'select') {
+                opcionesContainer.style.display = 'block';
+
+                // Agregar opciones existentes
+                if (pregunta.options && Array.isArray(pregunta.options)) {
+                    pregunta.options.forEach(op => {
+                        const container = document.createElement('div');
+                        container.className = 'opcion-item';
+
+                        const labelInput = document.createElement('input');
+                        labelInput.type = 'text';
+                        labelInput.className = 'opcion-label';
+                        labelInput.value = op.label;
+
+                        const valueInput = document.createElement('input');
+                        valueInput.type = 'text';
+                        valueInput.className = 'opcion-value';
+                        valueInput.value = op.value;
+
+                        container.appendChild(labelInput);
+                        container.appendChild(valueInput);
+
+                        opcionesLista.appendChild(container);
+                    });
+                }
+            }
+            
+            typeInput.addEventListener('change', () => {
+                if (typeInput.value === 'select') {
+                    opcionesContainer.style.display = 'block';
+                } else {
+                    opcionesContainer.style.display = 'none';
+                }
+            });
+
             feather.replace();
             // Reemplaza el div de la pregunta por el formulario de edición
             const preguntaDiv = document.querySelectorAll('.pregunta-item')[idx];
@@ -155,13 +208,23 @@
                 const name = div.querySelector('.name-input').value.trim();
                 const id = div.querySelector('.id-input').value.trim();
                 const placeholder = div.querySelector('.placeholder-input').value.trim();
+                const opciones = [];
+                if (type === 'select') {
+                    div.querySelectorAll('.opcion-item').forEach(item => {
+                        const label = item.querySelector('.opcion-label').value.trim();
+                        const value = item.querySelector('.opcion-value').value.trim();
+                        if (label && value) {
+                            opciones.push({ label, value });
+                        }
+                    });
+                }
 
                 if (!label || !type || !name || !id || !placeholder) {
                     alert('Todos los campos son obligatorios.');
                     return;
                 }
-
-                preguntas[idx] = { label, type, name, id, placeholder };
+                
+                preguntas[idx] = { label, type, name, id, placeholder, ...(type === 'select' ? { options:opciones } : {}) };
                 renderPreguntas();
             });
 
@@ -169,6 +232,9 @@
                 renderPreguntas();
             });
         }
+
+        
+
         window.editarPregunta = editarPregunta;
 
         document.getElementById('agregar-input').addEventListener('click', function() {
@@ -176,6 +242,7 @@
             container.className = 'input-group';
             container.innerHTML = `
                 <label>Label de la pregunta: <input type="text" class="label-input" required></label>
+                <label>Name: <input type="text" class="name-input" required></label>
                 <label>Tipo de input:
                     <select class="type-input">
                         <option value="text">Texto</option>
@@ -183,17 +250,53 @@
                         <option value="email">Email</option>
                         <option value="date">Fecha</option>
                         <option value="checkbox">Checkbox</option>
-                        <option value="radio">Radio</option>
+                        <option value="select">Select</option>
                         <option value="textarea">Textarea</option>
                     </select>
                 </label>
-                <label>Name: <input type="text" class="name-input" required></label>
+                <div class="opciones-container" style="display: none;">
+                    <label>Opciones para el select:</label>
+                    <div class="opciones-lista"></div>
+                    <button type="button" class="btn-agregar-opcion">
+                        <i data-feather="plus"></i> Agregar opción
+                    </button>
+                </div>
                 <label>ID: <input type="text" class="id-input" required></label>
                 <label>Placeholder: <input type="text" class="placeholder-input" required></label>
                 <button type="button" class="guardar-pregunta">
                     <i data-feather="plus-circle"></i> Guardar Pregunta
                 </button>
             `;
+
+            const typeInput = container.querySelector('.type-input');
+            const opcionesContainer = container.querySelector('.opciones-container');
+            const opcionesLista = container.querySelector('.opciones-lista');
+
+            typeInput.addEventListener('change', () => {
+                if (typeInput.value === 'select') {
+                    opcionesContainer.style.display = 'block';
+                } else {
+                    opcionesContainer.style.display = 'none';
+                }
+            });
+
+            const btnAgregarOpcion = container.querySelector('.btn-agregar-opcion');
+            if (btnAgregarOpcion) {
+                btnAgregarOpcion.addEventListener('click', function () {
+                    const div = document.createElement('div');
+                    div.className = 'opcion-item';
+                    div.innerHTML = `
+                        <input type="text" placeholder="Label" class="opcion-label" required>
+                        <input type="text" placeholder="Value" class="opcion-value" required>
+                        <button type="button" class="btn-remove-opcion">🗑</button>
+                    `;
+                    div.querySelector('.btn-remove-opcion').addEventListener('click', () => {
+                        div.remove();
+                    });
+                    opcionesLista.appendChild(div);
+                });
+            }
+
             feather.replace();
             document.getElementById('inputs-dinamicos').appendChild(container);
 
@@ -203,13 +306,30 @@
                 const name = container.querySelector('.name-input').value.trim();
                 const id = container.querySelector('.id-input').value.trim();
                 const placeholder = container.querySelector('.placeholder-input').value.trim();
-
+                let options = null;
+                
                 if (!label || !type || !name || !id  || !placeholder) {
                     alert('Todos los campos son obligatorios.');
                     return;
                 }
 
-                preguntas.push({ label, type, name, id, placeholder});
+                if (type === 'select') {
+                    const opciones = [];
+                    container.querySelectorAll('.opcion-item').forEach(op => {
+                        const label = op.querySelector('.opcion-label').value.trim();
+                        const value = op.querySelector('.opcion-value').value.trim();
+                        if (label && value) {
+                            opciones.push({ label, value });
+                        }
+                    });
+                    if (opciones.length === 0) {
+                        alert('Debe agregar al menos una opción para el select.');
+                        return;
+                    }
+                    options = opciones;
+                }
+
+                preguntas.push({ label, type, name, id, placeholder, options});
                 renderPreguntas();
                 container.remove();
             });
@@ -226,7 +346,7 @@
                 return;
             }
             e.preventDefault(); // Detiene el envío por defecto
-
+            
             const nombrePlantilla = document.getElementById('tipoPlantilla').value.trim();
 
             const result = await Swal.fire({
@@ -237,7 +357,7 @@
                 confirmButtonText: 'Sí, crear',
                 cancelButtonText: 'Cancelar'
             });
-
+            console.log(JSON.stringify(preguntas, null, 2));
             if (result.isConfirmed) {
 
                 e.target.submit(); // Envía el formulario si el usuario confirma

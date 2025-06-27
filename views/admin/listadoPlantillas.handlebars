@@ -39,9 +39,18 @@
                                 <div class="accordion-body">
                                     <form>
                                         {{#each this.Preguntas}}
+                                            {{this.Preguntas}}
                                             <div class="mb-3">
                                                 <label class="form-label">{{this.label}}</label>
-                                                <input type="{{this.tipo}}" class="form-control" value="{{this.valor}}" readonly>
+                                                {{#if (eq this.type "select")}}
+                                                    <select class="form-select">
+                                                        {{#each this.options}}
+                                                            <option value="{{this.value}}" disabled>{{this.label}}</option>
+                                                        {{/each}}
+                                                    </select>
+                                                {{else}}
+                                                    <input type="{{this.type}}" class="form-control" value="{{this.valor}}" placeholder="{{this.placeholder}}" readonly>
+                                                {{/if}}
                                             </div>
                                         {{/each}}
                                     </form>
