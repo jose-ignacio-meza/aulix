@@ -2,6 +2,28 @@ import { login } from '../services/auth.service.js';
 import Usuario from '../DAO/models/usuario.model.js';
 import bcrypt from 'bcrypt';
 
+export const mostrarHomePage = async(req,res)=>{
+  //Consulta a la db por las instituciones de este cliente, y a la db por los roles predefinidos cargados.
+  const instituciones = [
+  { nombre: "Jardin 910" },
+  { nombre: "Escuela Primaria N°10" },
+  { nombre: "E.E.S.T N°2" }
+];
+
+const roles = [
+  { nombre: "MIT" },
+  { nombre: "MI" },
+  { nombre: "M" }
+];
+  res.render('index', {
+    usuario: req.usuario,
+    instituciones,
+    roles,
+    institucionesJson: JSON.stringify(instituciones),
+    rolesJson: JSON.stringify(roles)
+  });
+}
+
 export const mostrarLogin = (req, res) => {
   res.render('login');
 };
@@ -31,12 +53,12 @@ export const procesarLogin = async (req, res) => {
     if (!usuario) {
       throw new Error('Usuario no encontrado');
     }
+
     if (usuario.rol === 'admin') {
       res.redirect('/admin/index'); // a la vista principal de admin
-    } else {
-      res.redirect('/'); // a la vista principal
     }
-    
+
+    res.redirect('/index'); // a la vista principal
   } catch (error) {
     res.render('login', { error: error.message });
   }

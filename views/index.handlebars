@@ -9,62 +9,64 @@
     <div class="container-app"> 
         {{> sidebar}}
         {{#if (eq usuario.rol 'admin')}}
-        <main class="main-content" style="">
-            <div class="welcome-card" id="welcomeCard">
-                <h2>Bienvenido{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}</h2>
-                <p>Rol: {{usuario.rol}}</p>
-                <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
-                <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
-            </div>
-            <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
-                <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
-                    ¿Qué desea Administrar hoy{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}?
-                </h2>
-                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/usuarios'"> Usuarios </button>
-                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/plantillas'"> Plantillas </button>
-                <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/otros'"> Otros </button>
-            </div>
-            <script>
-                const comenzarbtn = document.getElementById('comenzarbtn');
-                const welcomeCard = document.getElementById('welcomeCard');
-                const opciones = document.getElementById('opciones');
+            <main class="main-content" style="">
+                <div class="welcome-card" id="welcomeCard">
+                    <h2>Bienvenido{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}</h2>
+                    <p>Rol: {{usuario.rol}}</p>
+                    <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
+                    <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
+                </div>
+                <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
+                    <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
+                        ¿Qué desea Administrar hoy{{#if usuario.datosPersonales.nombre}}, {{capitalize usuario.datosPersonales.nombre}}{{/if}}?
+                    </h2>
+                    <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/usuarios'"> Usuarios </button>
+                    <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/plantillas'"> Plantillas </button>
+                    <button class="btn" style="margin: 0.5rem;" onclick="window.location.href='/admin/otros'"> Otros </button>
+                </div>
 
-                comenzarbtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Animar ocultar welcome-card
-                    welcomeCard.style.transition = 'opacity 0.5s, transform 0.5s';
-                    welcomeCard.style.opacity = '0';
-                    welcomeCard.style.transform = 'translateY(-30px)';
-                    setTimeout(() => {
-                        welcomeCard.style.display = 'none';
-                        // Animar mostrar opciones
-                        opciones.style.display = 'block';
+                <script>
+
+                    const comenzarbtn = document.getElementById('comenzarbtn');
+                    const welcomeCard = document.getElementById('welcomeCard');
+                    const opciones = document.getElementById('opciones');
+
+                    comenzarbtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        // Animar ocultar welcome-card
+                        welcomeCard.style.transition = 'opacity 0.5s, transform 0.5s';
+                        welcomeCard.style.opacity = '0';
+                        welcomeCard.style.transform = 'translateY(-30px)';
                         setTimeout(() => {
-                            opciones.style.opacity = '1';
-                            opciones.style.pointerEvents = 'auto';
-                            opciones.style.transform = 'translateY(0)';
-                            opciones.scrollIntoView({ behavior: 'smooth' });
-                        }, 10);
-                    }, 500);
-                });
-            </script>
-        </main>
+                            welcomeCard.style.display = 'none';
+                            // Animar mostrar opciones
+                            opciones.style.display = 'block';
+                            setTimeout(() => {
+                                opciones.style.opacity = '1';
+                                opciones.style.pointerEvents = 'auto';
+                                opciones.style.transform = 'translateY(0)';
+                                opciones.scrollIntoView({ behavior: 'smooth' });
+                            }, 10);
+                        }, 500);
+                    });
+                </script>
+            </main>
         {{else}}
-        <main class="main-content" style="background: linear-gradient(rgba(244, 248, 251, 0.671), rgba(176,196,222,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; border-radius: 16px; box-shadow: 0 4px 24px rgba(46,58,79,0.10);">
-            <div class="welcome-card" id="welcomeCard">
-                <h2>Bienvenido, {{usuario.datosPersonales.nombre}}</h2>
-                <p>Rol: {{usuario.rol}}</p>
-                <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
-                <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
-            </div>
-            <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
-                <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
-                    ¿Qué desea hacer hoy, {{usuario.datosPersonales.nombre}}?
-                </h2>
-                <button class="btn" style="margin: 0.5rem;">Planificación</button>
-                <button class="btn" style="margin: 0.5rem;">Declaración Jurada</button>
-                <button class="btn" style="margin: 0.5rem;">Otros Documentos</button>
-            </div>
+            <main class="main-content" style="background: linear-gradient(rgba(244, 248, 251, 0.671), rgba(176,196,222,0.85)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat; border-radius: 16px; box-shadow: 0 4px 24px rgba(46,58,79,0.10);">
+                <div class="welcome-card" id="welcomeCard">
+                    <h2>Bienvenido, {{usuario.datosPersonales.nombre}}</h2>
+                    <p>Rol: {{usuario.rol}}</p>
+                    <p>¡Has ingresado al sistema de <strong>Creación de Formularios</strong>!</p>
+                    <a href="#opciones" class="btn" id="comenzarbtn">Comenzar</a>
+                </div>
+
+                <div id="opciones" class="opciones-anim" style="opacity:0; pointer-events:none; transform: translateY(30px); transition: opacity 0.5s, transform 0.5s;">
+                    <h2 style="text-align:center; margin-bottom: 1.5rem; color: var(--primary);">
+                        Complete la información para continuar, {{usuario.datosPersonales.nombre}}:
+                    </h2>
+                    <div id="flujoCliente" class="flujo-preguntas" style="margin-top: 2rem;"></div>
+                </div>
+            </main>
             <script>
                 const comenzarbtn = document.getElementById('comenzarbtn');
                 const welcomeCard = document.getElementById('welcomeCard');
@@ -72,13 +74,11 @@
 
                 comenzarbtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    // Animar ocultar welcome-card
                     welcomeCard.style.transition = 'opacity 0.5s, transform 0.5s';
                     welcomeCard.style.opacity = '0';
                     welcomeCard.style.transform = 'translateY(-30px)';
                     setTimeout(() => {
                         welcomeCard.style.display = 'none';
-                        // Animar mostrar opciones
                         opciones.style.display = 'block';
                         setTimeout(() => {
                             opciones.style.opacity = '1';
@@ -89,7 +89,155 @@
                     }, 500);
                 });
             </script>
-        </main>
+            <script>
+                const instituciones = {{{json instituciones}}}; // array desde la DB
+                const roles = {{{json roles}}} // array desde la DB
+                const respuestas = {};
+                let pasoActual = 0;
+
+                const pasos = [
+                    {
+                        id: "accion",
+                        pregunta: "¿Qué desea hacer hoy?",
+                        tipo: "select",
+                        opciones: [
+                        {
+                            valor: "Planificación",
+                            subpregunta: {
+                            id: "tipoPlanificacion",
+                            pregunta: "¿Qué tipo de planificación?",
+                            tipo: "select",
+                            opciones: ["Anual", "Mensual"]
+                            }
+                        },
+                        {
+                            valor: "Proyecto Informe",
+                            subpregunta: {
+                            id: "tipoProyecto",
+                            pregunta: "¿Qué tipo de proyecto?",
+                            tipo: "select",
+                            opciones: ["Individual", "Grupal"]
+                            }
+                        },
+                        {
+                            valor: "DDJJ"
+                        },
+                        {
+                            valor: "Acta",
+                            subpregunta: {
+                            id: "tipoActa",
+                            pregunta: "¿Qué tipo de acta?",
+                            tipo: "select",
+                            opciones: ["Comportamiento", "Recepción de familia", "Clase abierta"]
+                            }
+                        }
+                        ]
+                    },
+                    {
+                        id: "institucion",
+                        pregunta: "¿En qué institución?",
+                        tipo: "select-input",
+                        opciones: instituciones.map(i => i.nombre)
+                    },
+                    {
+                        id: "nivel",
+                        pregunta: "¿Para qué nivel?",
+                        tipo: "select",
+                        opciones: ["Inicial", "Primario", "Secundario"]
+                    },
+                    {
+                        id: "rol",
+                        pregunta: "Selecciona tu rol",
+                        tipo: "select",
+                        opciones: roles.map(r => r.nombre)
+                    }
+                    ];
+
+                const contenedor = document.getElementById("flujoCliente");
+
+                function renderPaso() {
+                    if (pasoActual >= pasos.length) {
+                        console.log("Respuestas completas:", respuestas);
+                        // Aquí luego hacés la redirección según respuestas
+                        return;
+                    }
+
+                    const paso = pasos[pasoActual];
+                    let html = `<label><strong>${paso.pregunta}</strong></label><br>`;
+
+                    if (paso.tipo === "select") {
+                        html += `<select id="input-${paso.id}" class="form-control" style="margin:0.5rem 0;">`;
+
+                        html += paso.opciones.map(opt => {
+                            if (typeof opt === "string") {
+                                return `<option value="${opt}">${opt}</option>`;
+                            } else {
+                                return `<option value="${opt.valor}">${opt.valor}</option>`;
+                            }
+                        }).join('');
+
+                        html += `</select>`;
+                    }
+
+                    if (paso.tipo === "select-input") {
+                        html += `<select id="input-${paso.id}" class="form-control" style="margin:0.5rem 0;">
+                                    ${paso.opciones.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                                    <option value="_nuevo">+ Agregar nueva institución</option>
+                                </select>
+                                <input type="text" id="nuevo-${paso.id}" class="form-control" placeholder="Ingrese nueva institución" style="margin-top: 0.5rem; display: none;">`;
+                    }
+
+                    html += `<br><button class="btn" id="siguientePaso">Siguiente</button>`;
+                    contenedor.innerHTML = html;
+
+                    if (paso.tipo === "select-input") {
+                        const selectEl = document.getElementById(`input-${paso.id}`);
+                        const nuevoEl = document.getElementById(`nuevo-${paso.id}`);
+                        selectEl.addEventListener("change", () => {
+                            if (selectEl.value === "_nuevo") {
+                                nuevoEl.style.display = "block";
+                            } else {
+                                nuevoEl.style.display = "none";
+                            }
+                        });
+                    }
+
+                    document.getElementById("siguientePaso").addEventListener("click", () => {
+                    let valor = "";
+
+                    if (paso.tipo === "select") {
+                        valor = document.getElementById(`input-${paso.id}`).value;
+                    } else if (paso.tipo === "select-input") {
+                        const select = document.getElementById(`input-${paso.id}`);
+                        if (select.value === "_nuevo") {
+                            valor = document.getElementById(`nuevo-${paso.id}`).value.trim();
+                            if (!valor) return alert("Ingrese el nombre de la nueva institución.");
+                        } else {
+                            valor = select.value;
+                        }
+                    }
+
+                    if (!valor) return alert("Por favor, complete el campo.");
+                    respuestas[paso.id] = valor;
+
+                    // Detectar subpregunta dinámica para el paso "accion"
+                    if (paso.id === "accion") {
+                        const opcionSeleccionada = paso.opciones.find(o => {
+                            if (typeof o === "string") return o === valor;
+                            return o.valor === valor;
+                        });
+
+                        if (opcionSeleccionada?.subpregunta) {
+                            pasos.splice(pasoActual + 1, 0, opcionSeleccionada.subpregunta);
+                        }
+                    }
+
+                    pasoActual++;
+                    renderPaso();
+                    });
+                }
+                renderPaso();
+            </script>
         {{/if}}
     </div>
     <script>

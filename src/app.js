@@ -27,6 +27,9 @@ app.engine('handlebars', exphbs.create({
   partialsDir: './views/partials',
   defaultLayout: 'main',
   helpers: {
+    json: function(context) {
+      return JSON.stringify(context);
+    },
     eq: (a, b) => a === b,
     formatDate: (date, formatStr = 'yyyy/MM/dd') => {
       if (!date) return '';
@@ -47,20 +50,20 @@ app.set('view engine', 'handlebars');
 app.set('views', './views');
 //Fin config Handlebars
 
-
+/*
 app.get('/', verificarToken, (req, res) => {
   console.log('Usuario autenticado:', req.usuario);
-  res.render('index', { usuario: req.usuario });
-});
+  res.render('index', { usuario: req.usuario, });
+});*/
 
 // Rutas
-app.use('/', authRoutes);
+app.use('', authRoutes);
 app.use('/datos-personales', verificarToken, datosPersonales);
 app.use('/formularios', verificarToken, formularios);
 app.use('/admin', verificarToken, adminRoutes);
 
 connectDB().on('connected', () => {
   app.listen(PORT, () => {
-    console.log(`🚀 Servidor en http://localhost:${PORT}`);
+    console.log(`🚀 Servidor en http://localhost:${PORT}/index`);
   });
 });
