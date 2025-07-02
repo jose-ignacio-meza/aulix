@@ -1,9 +1,11 @@
 import {
     crear,
     obtenerTodos,
-    obtenerPlantillaPorTipo,
+    obtenerPlantillaPorId,
     actualizar,
-    eliminar
+    eliminar,
+    findEliminadas,
+    restaurar
 } from '../DAO/plantillasFormularios.dao.js';
 
 /**
@@ -46,12 +48,14 @@ export const crearPlantilla = async (datos) => {
     }
 };
 
-export const obtenerPlantilla = async (tipo) => {
-    return await obtenerPlantillaPorTipo(tipo);
+export const obtenerPlantilla = async (id) => {
+    return await obtenerPlantillaPorId(id);
 };
 
 export const obtenerTodasLasPlantillas = async () => {
-    return await obtenerTodos();
+    const plantillas =await obtenerTodos();
+    const plantillasEliminadas= await findEliminadas();
+    return {plantillas,plantillasEliminadas}
 };
 
 export const actualizarPlantilla = async (id, nuevosDatos) => {
@@ -61,3 +65,7 @@ export const actualizarPlantilla = async (id, nuevosDatos) => {
 export const eliminarPlantilla = async (id) => {
     return await eliminar(id);
 };
+
+export const restaurarPlantilla = async (id) => {
+    return await restaurar(id);
+}

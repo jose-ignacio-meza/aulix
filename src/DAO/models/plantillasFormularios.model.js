@@ -22,6 +22,10 @@ const PlantillaFormularioSchema = new mongoose.Schema({
         type: Map,
         of: PreguntaSchema,
         required: true
+    },
+    eliminado: {
+        type: Boolean,
+        default: false
     }
 });
 

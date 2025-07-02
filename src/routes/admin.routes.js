@@ -18,9 +18,10 @@ router.post('/editarUsuario', soloAdmin, adminController.editarUsuario);
 // Rutas para platnillas
 router.get('/crearPlantilla', soloAdmin, plantillaController.mostrarCrearPlantilla);
 router.post('/guardarPlantilla', soloAdmin, plantillaController.guardarPlantilla);
-router.get('/plantillas/:tipo', soloAdmin, plantillaController.obtenerPlantilla);
+router.get('/editarPlantilla/:id', soloAdmin, plantillaController.obtenerPlantilla);
 router.get('/plantillas', soloAdmin, plantillaController.obtenerTodasLasPlantillas);
-router.put('/plantillas/:id', soloAdmin, plantillaController.actualizarPlantilla);
-router.delete('/plantillas/:id', soloAdmin, plantillaController.eliminarPlantilla);
+router.post('/actualizarPlantilla/:id', soloAdmin, plantillaController.actualizarPlantilla);
+router.get('/eliminarPlantilla/:id', soloAdmin, plantillaController.eliminarPlantilla);
+router.get('/restaurarPlantilla/:id', soloAdmin, plantillaController.restaurarPlantilla)
 
 export {router};

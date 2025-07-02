@@ -34,12 +34,13 @@ const guardarPlantilla = async (req, res) => {
 
 const obtenerPlantilla = async (req, res) => {
     try {
-        const { tipo } = req.params;
-        const plantilla = await plantillaService.obtenerPlantilla(tipo);
+        const { id } = req.params;
+        const plantilla = await plantillaService.obtenerPlantilla(id);
         if (!plantilla) {
             return res.status(404).json({ message: 'Plantilla no encontrada' });
         }
-        res.json(plantilla);
+        //res.json(plantilla);
+        res.status(200).render('admin/editarPlantilla', {plantilla});
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener plantilla' });
     }
@@ -47,9 +48,9 @@ const obtenerPlantilla = async (req, res) => {
 
 const obtenerTodasLasPlantillas = async (req, res) => {
     try {
-        const plantillas = await plantillaService.obtenerTodasLasPlantillas();
-        console.log(plantillas);
-        res.render('admin/listadoPlantillas', {'plantillas':plantillas});
+        const resultado = await plantillaService.obtenerTodasLasPlantillas();
+        console.log(resultado);
+        res.render('admin/listadoPlantillas', {'plantillas':resultado.plantillas, 'plantillasEliminadas':resultado.plantillasEliminadas});
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener plantillas' });
     }
@@ -59,11 +60,12 @@ const actualizarPlantilla = async (req, res) => {
     try {
         const { id } = req.params;
         const nuevosDatos = req.body;
+        //console.log('🟡 Nuevos datos recibidos:\n', JSON.stringify(nuevosDatos, null, 2));
         const plantillaActualizada = await plantillaService.actualizarPlantilla(id, nuevosDatos);
         if (!plantillaActualizada) {
             return res.status(404).json({ message: 'Plantilla no encontrada' });
         }
-        res.json(plantillaActualizada);
+        res.status(200).redirect('/admin/plantillas')
     } catch (error) {
         res.status(500).json({ message: 'Error al actualizar plantilla' });
     }
@@ -76,11 +78,25 @@ const eliminarPlantilla = async (req, res) => {
         if (!eliminado) {
             return res.status(404).json({ message: 'Plantilla no encontrada' });
         }
-        res.json({ message: 'Plantilla eliminada correctamente' });
+        res.status(200).redirect('/admin/plantillas');
     } catch (error) {
         res.status(500).json({ message: 'Error al eliminar plantilla' });
     }
 };
+
+const restaurarPlantilla = async(req,res) => {
+    try {
+        const { id } = req.params;
+        const restaurado = await plantillaService.restaurarPlantilla(id);
+        console.log('paso');
+        if (!restaurado) {
+            return res.status(404).json({ message: 'Plantilla no encontrada' });
+        }
+        res.status(200).redirect('/admin/plantillas');
+    } catch (error) {
+        res.status(500).json({ message: 'Error al restaurar plantilla' });
+    }
+}
 
 export {
     mostrarCrearPlantilla,
@@ -88,5 +104,6 @@ export {
     obtenerPlantilla,
     obtenerTodasLasPlantillas,
     actualizarPlantilla,
-    eliminarPlantilla
+    eliminarPlantilla,
+    restaurarPlantilla
 };

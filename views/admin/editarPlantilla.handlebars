@@ -1,0 +1,145 @@
+<style>
+    .preguntaActualizarPlantilla{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        border: 1px solid darkgrey;
+        padding: 13px;
+    }
+</style>
+{{> navbar}}
+
+<body>
+    <div class="container-app">
+        {{> sidebar}}
+
+        <div class="main-content">
+            <h2>Editar Plantilla: {{plantilla.tipo}}</h2>
+
+            <form action="/admin/actualizarPlantilla/{{plantilla._id}}" method="POST" id="formPlantilla">
+                <div id="contenedorPreguntas"></div>
+
+                <button type="button" id="btnAgregarPregunta" class="btn btn-primary mt-3">
+                    Agregar nueva pregunta
+                </button>
+
+                <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+    <script>
+    const plantilla = {{{json plantilla}}};
+    const contenedor = document.getElementById('contenedorPreguntas');
+
+    // Inicializamos contador según la cantidad de claves
+    let contadorPreguntas = Object.keys(plantilla.Preguntas || {}).length;
+
+    // 1. Pintamos las preguntas existentes
+    Object.entries(plantilla.Preguntas || {}).forEach(([clave, pregunta], idx) => {
+        renderPregunta(idx, pregunta);
+    });
+
+    // 2. Agregar nueva pregunta
+    document.getElementById('btnAgregarPregunta').addEventListener('click', () => {
+        renderPregunta(contadorPreguntas++, {
+        id: '',
+        name: '',
+        label: '',
+        placeholder: '',
+        type: 'text',
+        options: []
+        });
+    });
+
+    // 3. Función para renderizar una pregunta en el formulario
+    function renderPregunta(index, pregunta) {
+        const div = document.createElement('div');
+        div.classList.add('mb-3', 'preguntaActualizarPlantilla');
+
+        const tipos = ['text', 'email', 'number', 'select', 'checkbox'];
+        const selectOptions = tipos.map(tipo => `
+        <option value="${tipo}" ${pregunta.type === tipo ? 'selected' : ''}>${tipo}</option>
+        `).join('');
+
+        div.innerHTML = `
+        <label>Nombre interno (id):</label>
+        <input type="text" name="preguntas[${index}][id]" class="form-control" value="${pregunta.id || ''}">
+
+        <label>Label (texto visible):</label>
+        <input type="text" name="preguntas[${index}][label]" class="form-control" value="${pregunta.label || ''}">
+
+        <label>Tipo:</label>
+        <select name="preguntas[${index}][type]" class="form-select tipo-input">
+            ${selectOptions}
+        </select>
+
+        <label>Placeholder:</label>
+        <input type="text" name="preguntas[${index}][placeholder]" class="form-control" value="${pregunta.placeholder || ''}">
+
+        <label>Name:</label>
+        <input type="text" name="preguntas[${index}][name]" class="form-control" value="${pregunta.name || ''}">
+
+        <div class="opciones-container mt-2" style="display: ${pregunta.type === 'select' || pregunta.type === 'checkbox' ? 'block' : 'none'}">
+            <label>Opciones:</label>
+            <div class="opciones-lista">
+            ${(pregunta.options || []).map((opt, i) => `
+                <div class="input-group mb-1">
+                <input type="text" name="preguntas[${index}][options][${i}][label]" class="form-control" value="${opt.label}">
+                <input type="text" name="preguntas[${index}][options][${i}][value]" class="form-control" value="${opt.value}">
+                <button type="button" class="btn btn-outline-danger btn-sm btn-eliminar-opcion">×</button>
+                </div>
+            `).join('')}
+            </div>
+            <button type="button" class="btn btn-sm btn-secondary btn-agregar-opcion" data-index="${index}">+ Opción</button>
+        </div>
+
+        <hr>
+        `;
+
+        contenedor.appendChild(div);
+    }
+
+    // 4. Cambiar visibilidad de opciones al cambiar el tipo
+    document.addEventListener('change', e => {
+        if (e.target.classList.contains('tipo-input')) {
+        const tipo = e.target.value;
+        const contenedorPregunta = e.target.closest('.preguntaActualizarPlantilla');
+        const opcionesContainer = contenedorPregunta.querySelector('.opciones-container');
+
+        if (tipo === 'select' || tipo === 'checkbox') {
+            opcionesContainer.style.display = 'block';
+        } else {
+            opcionesContainer.style.display = 'none';
+        }
+        }
+    });
+
+    // 5. Agregar opción nueva a una pregunta select/checkbox
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('btn-agregar-opcion')) {
+            const index = e.target.dataset.index;
+            const contenedor = e.target.closest('.opciones-container').querySelector('.opciones-lista');
+            const cantidad = contenedor.querySelectorAll('.input-group').length;
+
+            const nuevoGrupo = document.createElement('div');
+            nuevoGrupo.classList.add('input-group', 'mb-1', 'opcion-item'); // ✅ Acá agregás la clase necesaria
+            nuevoGrupo.innerHTML = `
+                <input type="text" name="preguntas[${index}][options][${cantidad}][label]" class="form-control" placeholder="Texto opción">
+                <input type="text" name="preguntas[${index}][options][${cantidad}][value]" class="form-control" placeholder="Valor opción">
+                <button type="button" class="btn btn-outline-danger btn-sm btn-eliminar-opcion">×</button>
+            `;
+            contenedor.appendChild(nuevoGrupo);
+        }
+    });
+
+    // 6. Agregar escucha para eliminar opciones de select o chekbox.
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('btn-eliminar-opcion')) {
+            const opcion = e.target.closest('.input-group');
+            if (opcion) opcion.remove();
+        }
+    });
+    </script>
+
+
+</body>

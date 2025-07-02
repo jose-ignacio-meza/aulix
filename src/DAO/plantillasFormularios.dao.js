@@ -14,7 +14,15 @@ const crear = async (plantillaData) => {
 
 const obtenerTodos = async () => {
     try {
-        return await PlantillaFormulario.find().lean();
+        return await PlantillaFormulario.find({ eliminado: false }).lean();
+    } catch (error) {
+        throw error;
+    }
+}
+
+const obtenerPlantillaPorId = async (id) => {
+    try {
+        return await PlantillaFormulario.findOne({ _id: id }).lean();
     } catch (error) {
         throw error;
     }
@@ -29,16 +37,49 @@ const obtenerPlantillaPorTipo = async (tipo) => {
 }
 
 const actualizar = async (id, datosActualizados) => {
+  try {
+    const preguntasArray = datosActualizados.preguntas || [];
+
+    // Convertimos el array a objeto, usando el "name" o "id" como clave
+    const preguntasObj = {};
+    preguntasArray.forEach(p => {
+      const clave = p.name || p.id || p.label || Math.random().toString(36).slice(2);
+      preguntasObj[clave] = p;
+    });
+
+    const datosFinales = {
+      Preguntas: preguntasObj,
+      ...(datosActualizados.tipo && { tipo: datosActualizados.tipo })
+    };
+
+    console.log('🟡 Datos listos para guardar:\n', JSON.stringify(datosFinales, null, 2));
+
+    const result = await PlantillaFormulario.findByIdAndUpdate(id, datosFinales, { new: true }).lean();
+    console.log('✅ Resultado guardado:\n', JSON.stringify(result, null, 2));
+    return result;
+
+  } catch (error) {
+    console.error('❌ Error en actualización:', error);
+    throw error;
+  }
+};
+
+const eliminar = async (id) => {
     try {
-        return await PlantillaFormulario.findByIdAndUpdate(id, datosActualizados, { new: true }).lean();
+        return await PlantillaFormulario.findByIdAndUpdate(id, { eliminado: true });
     } catch (error) {
         throw error;
     }
 }
 
-const eliminar = async (id) => {
+const findEliminadas = async () => {
+  return await PlantillaFormulario.find({ eliminado: true }).lean();
+};
+
+const restaurar = async(id) =>{
     try {
-        return await PlantillaFormulario.findByIdAndDelete(id);
+        const result = await PlantillaFormulario.findByIdAndUpdate(id, { eliminado: false });
+        return result
     } catch (error) {
         throw error;
     }
@@ -47,7 +88,10 @@ const eliminar = async (id) => {
 export {
     crear,
     obtenerTodos,
+    obtenerPlantillaPorId,
     obtenerPlantillaPorTipo,
     actualizar,
-    eliminar
+    eliminar,
+    findEliminadas,
+    restaurar
 };
