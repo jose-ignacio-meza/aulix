@@ -52,7 +52,7 @@ const crearUnUsuario = async (req, res) => {
         const datos ={email,password:hashedPassword,datosPersonales}
         console.log("datos:", datos)
         const nuevoUsuario = await crearUsuario(datos);
-        res.status(201).json(nuevoUsuario);
+        res.status(201).render('/admin/listadoUsuarios',{message:"Usuario creado ", nuevoUsuario});
     } catch (error) {
         res.status(500).json({ message: 'Error al crear usuario' });
     }

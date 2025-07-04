@@ -51,7 +51,7 @@
                     </p>
                     <p><strong>Fecha de nacimiento:</strong>
                         {{#if user.datosPersonales.fechaNacimiento}}
-                        {{formatDate user.datosPersonales.fechaNacimiento "DD/MM/YYYY"}}
+                            {{formatDate user.datosPersonales.fechaNacimiento "dd/MM/yyyy"}}
                         {{else}}
                         <em>Falta completar la fecha de nacimiento</em>
                         {{/if}}

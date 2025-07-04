@@ -46,6 +46,114 @@
             margin-top: 6px;
             transition: background 0.2s;
         }
+        
+        .input-group {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 1em;
+            border-radius: 10px;
+            margin-bottom: 1.5em;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            flex-direction: column;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 0.5em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 0.3em;
+            margin-bottom: 1em;
+            box-sizing: border-box;
+        }
+
+.opciones-container {
+    background-color: #eef6ff;
+    padding: 1em;
+    border-radius: 8px;
+    border: 1px dashed #82b3e3;
+    margin-top: 1em;
+}
+
+.opciones-container label {
+    font-weight: 600;
+    color: #234567;
+}
+
+.opcion-item {
+    display: flex;
+    gap: 1em;
+    margin-top: 0.5em;
+    align-items: center;
+}
+
+.opcion-item input {
+    flex: 1;
+}
+
+.btn-remove-opcion {
+    background: transparent;
+    border: none;
+    color: #c00;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.acciones-pregunta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 1em;
+    margin-top: 1em;
+    
+}
+
+.acciones-pregunta button {
+    padding: 0.6em 1.2em;
+    font-size: 0.95em;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.acciones-pregunta .guardar-pregunta {
+    background-color: #234567;
+    color: #fff;
+}
+
+.acciones-pregunta .cancelar-pregunta {
+    background-color: #aaa;
+    color: #fff;
+}
+
+.acciones-pregunta .guardar-edicion {
+    background-color: #234567;
+    color:#fff;
+}
+
+.acciones-pregunta .cancelar-edicion{
+    background-color: #aaa;
+    color: #fff;
+}
+.acciones-pregunta .guardar-pregunta:hover,
+.acciones-pregunta .guardar-edicion:hover {
+    background-color: #1a3550;
+}
+
+.acciones-pregunta .cancelar-pregunta:hover,
+.acciones-pregunta .cancelar-edicion:hover {
+    background-color: #888;
+}
+
 
     </style>
 </head>
@@ -53,7 +161,7 @@
     {{> navbar}}
     <div class="container-app"> 
         {{> sidebar}}
-        <div class="main-content" style="padding: 40px; background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.07);">
+        <div class="main-content" style="justify-content: flex-start;">
             <h1 style="color: #234567; font-weight: 600; margin-bottom: 32px;">Crear Plantilla de Formulario</h1>
             <p>Utiliza este formulario para crear una plantilla de formulario personalizada. Puedes agregar preguntas dinámicamente y guardarlas para su uso posterior.</p>
             <form class="formCrearPlantilla" id="formulario-plantilla" method="POST" action="/admin/guardarPlantilla">
@@ -129,34 +237,38 @@
             const div = document.createElement('div');
             div.className = 'input-group';
             div.innerHTML = `
-                <label>Label de la pregunta: <input type="text" class="label-input" value="${pregunta.label}" required></label>
-                <label>Tipo de input:
-                    <select class="type-input">
-                        <option value="text" ${pregunta.type === 'text' ? 'selected' : ''}>Texto</option>
-                        <option value="number" ${pregunta.type === 'number' ? 'selected' : ''}>Número</option>
-                        <option value="email" ${pregunta.type === 'email' ? 'selected' : ''}>Email</option>
-                        <option value="date" ${pregunta.type === 'date' ? 'selected' : ''}>Fecha</option>
-                        <option value="checkbox" ${pregunta.type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
-                        <option value="select" ${pregunta.type === 'select' ? 'selected' : ''}>Select</option>
-                        <option value="textarea" ${pregunta.type === 'textarea' ? 'selected' : ''}>Textarea</option>
-                    </select>
-                </label>
-                <div class="opciones-container" style="display: none;">
-                    <label>Opciones para el select:</label>
-                    <div class="opciones-lista"></div>
-                    <button type="button" class="btn-agregar-opcion">
-                        <i data-feather="plus"></i> Agregar opción
+                <div>
+                    <label>Label de la pregunta: <input type="text" class="label-input" value="${pregunta.label}" required></label>
+                    <label>Name: <input type="text" class="name-input" value="${pregunta.name}" required></label>
+                    <label>ID: <input type="text" class="id-input" value="${pregunta.id}" required></label>
+                    <label>Placeholder: <input type="text" class="placeholder-input" value="${pregunta.placeholder}" required></label>
+                    <label>Tipo de input:
+                        <select class="type-input">
+                            <option value="text" ${pregunta.type === 'text' ? 'selected' : ''}>Texto</option>
+                            <option value="number" ${pregunta.type === 'number' ? 'selected' : ''}>Número</option>
+                            <option value="email" ${pregunta.type === 'email' ? 'selected' : ''}>Email</option>
+                            <option value="date" ${pregunta.type === 'date' ? 'selected' : ''}>Fecha</option>
+                            <option value="checkbox" ${pregunta.type === 'checkbox' ? 'selected' : ''}>Checkbox</option>
+                            <option value="select" ${pregunta.type === 'select' ? 'selected' : ''}>Select</option>
+                            <option value="textarea" ${pregunta.type === 'textarea' ? 'selected' : ''}>Textarea</option>
+                        </select>
+                    </label>
+                    <div class="opciones-container" style="display: none;">
+                        <label>Opciones para el select:</label>
+                        <div class="opciones-lista"></div>
+                        <button type="button" class="btn-agregar-opcion">
+                            <i data-feather="plus"></i> Agregar opción
+                        </button>
+                    </div>
+                </div>
+                <div class="acciones-pregunta">
+                    <button type="button" class="guardar-edicion">
+                        <i data-feather="save"></i> Guardar Cambios
+                    </button>
+                    <button type="button" class="cancelar-edicion">
+                        <i data-feather="x-circle"></i> Cancelar
                     </button>
                 </div>
-                <label>Name: <input type="text" class="name-input" value="${pregunta.name}" required></label>
-                <label>ID: <input type="text" class="id-input" value="${pregunta.id}" required></label>
-                <label>Placeholder: <input type="text" class="placeholder-input" value="${pregunta.placeholder}" required></label>
-                <button type="button" class="guardar-edicion">
-                    <i data-feather="save"></i> Guardar Cambios
-                </button>
-                <button type="button" class="cancelar-edicion">
-                    <i data-feather="x-circle"></i> Cancelar
-                </button>
             `;
 
             const typeInput = div.querySelector('.type-input');
@@ -268,6 +380,8 @@
             container.innerHTML = `
                 <label>Label de la pregunta: <input type="text" class="label-input" required></label>
                 <label>Name: <input type="text" class="name-input" required></label>
+                <label>ID: <input type="text" class="id-input" required></label>
+                <label>Placeholder: <input type="text" class="placeholder-input" required></label>
                 <label>Tipo de input:
                     <select class="type-input">
                         <option value="text">Texto</option>
@@ -286,11 +400,14 @@
                         <i data-feather="plus"></i> Agregar opción
                     </button>
                 </div>
-                <label>ID: <input type="text" class="id-input" required></label>
-                <label>Placeholder: <input type="text" class="placeholder-input" required></label>
-                <button type="button" class="guardar-pregunta">
-                    <i data-feather="plus-circle"></i> Guardar Pregunta
-                </button>
+                <div class="acciones-pregunta">
+                    <button type="button" class="guardar-pregunta">
+                        <i data-feather="plus-circle"></i> Guardar Pregunta
+                    </button>
+                    <button type="button" class="cancelar-pregunta">
+                        <i data-feather="x-circle"></i> Cancelar
+                    </button>
+                </div>
             `;
 
             const typeInput = container.querySelector('.type-input');
@@ -324,7 +441,8 @@
 
             feather.replace();
             document.getElementById('inputs-dinamicos').appendChild(container);
-
+            
+            //Guarda una pregunta
             container.querySelector('.guardar-pregunta').addEventListener('click', function() {
                 const label = container.querySelector('.label-input').value.trim();
                 const type = container.querySelector('.type-input').value;
@@ -358,7 +476,15 @@
                 renderPreguntas();
                 container.remove();
             });
+
+            //Cancelar la pregunta
+            container.querySelector('.cancelar-pregunta').addEventListener('click', function () {
+                container.remove();
+            });
+            feather.replace();
         });
+
+        
 
         document.getElementById('formulario-plantilla').addEventListener('submit', async function(e) {
             if (preguntas.length === 0) {
