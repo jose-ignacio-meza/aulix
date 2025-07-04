@@ -91,7 +91,7 @@ export const editarInstitucionController = async (req, res) => {
       cursos: Array.isArray(cursos) ? cursos : [cursos]
     });
 
-    res.redirect('/usuario/listadoInstituciones');
+    res.redirect('/usuario/instituciones');
   } catch (error) {
     console.error(error);
     res.status(500).send('Error al editar institución');
