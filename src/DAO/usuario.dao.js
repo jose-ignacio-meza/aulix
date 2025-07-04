@@ -71,3 +71,61 @@ export const darDeAltaUsuario = async(id)=>{
     throw error;
   }
 }
+
+//metodos para instituciones-------------------
+export const traerInstituciones = async(idUsuario) => {
+  const result =  await UsuarioModel.findById(idUsuario, 'instituciones').lean();
+ return result;
+}
+
+export const agregarInstitucion = async (idUsuario,institucion) => {
+   return await UsuarioModel.findByIdAndUpdate(
+    idUsuario,
+    { $push: { instituciones: institucion } },
+    { new: true }
+  ).lean();
+};
+
+export const eliminarInstitucionDAO = async (idUsuario, idInstitucion) => {
+  const usuario = await UsuarioModel.findById(idUsuario);
+
+  if (!usuario) throw new Error('Usuario no encontrado');
+
+  const institucion = usuario.instituciones.id(idInstitucion);
+
+  if (!institucion) throw new Error('Institución no encontrada');
+
+  institucion.eliminado = true;
+  await usuario.save();
+};
+
+export const restaurarInsititucionesDao = async (idUsuario, idInstitucion) => {
+   const usuario = await UsuarioModel.findById(idUsuario);
+
+    if (!usuario) throw new Error('Usuario no encontrado');
+
+    const institucion = usuario.instituciones.id(idInstitucion);
+
+    if (!institucion) throw new Error('Institución no encontrada');
+
+    institucion.eliminado = null;
+    await usuario.save();
+}
+
+export const editarInstitucionDAO = async (idUsuario, idInstitucion, datos) => {
+  const usuario = await UsuarioModel.findById(idUsuario);
+
+  if (!usuario) throw new Error('Usuario no encontrado');
+
+  const institucion = usuario.instituciones.id(idInstitucion);
+
+  if (!institucion) throw new Error('Institución no encontrada');
+
+  institucion.nombre = datos.nombre;
+  institucion.cargo = datos.cargo;
+  institucion.cursos = datos.cursos;
+
+  await usuario.save();
+
+  return institucion;
+};

@@ -1,5 +1,6 @@
+import Establecimiento from '../DAO/models/establecimientos.model.js';
 import Usuario from '../DAO/models/usuario.model.js';
-import {crearUsuarioDAO,eliminarUsuario,darDeAltaUsuario,buscarUsuarioPorId} from '../DAO/usuario.dao.js'
+import {crearUsuarioDAO,eliminarUsuario,darDeAltaUsuario,buscarUsuarioPorId,traerInstituciones, agregarInstitucion, eliminarInstitucionDAO,restaurarInsititucionesDao, editarInstitucionDAO} from '../DAO/usuario.dao.js'
 
 export const getUsuarioPorId = async(id) => {
   try{
@@ -64,4 +65,40 @@ export const darAltaUser = async(id)=>{
 
 export const actualizarUsuario = async (id, datos) => {
   return await Usuario.findByIdAndUpdate(id, datos, { new: true });
+};
+
+//metodos para instituciones :-----------------------------------------------
+
+export const darAltaInstitucion = async(idUsuario,institucion)=>{
+  // Validación básica (opcional, podés mejorarla)
+  if (!institucion.nombre || !institucion.cargo) {
+    throw new Error('Nombre y cargo son requeridos');
+  }
+
+  institucion.cursos = Array.isArray(institucion.cursos)
+    ? institucion.cursos
+    : [institucion.cursos]; // por si solo hay uno
+
+  return await agregarInstitucion(idUsuario, institucion);
+}
+
+export const getInstituciones = async (idUsuario)=>{
+  const instituciones = await traerInstituciones(idUsuario);
+  return instituciones
+}
+
+export const eliminarInstitucionService = async (idUsuario, idInstitucion) => {
+  return await eliminarInstitucionDAO(idUsuario, idInstitucion);
+};
+
+export const restaurarInstitucionService = async(idUsuario, idInstitucion)=> {
+  return await restaurarInsititucionesDao(idUsuario, idInstitucion);
+}
+
+export const editarInstitucionService = async (idUsuario, idInstitucion, datos) => {
+  if (!datos.nombre || !datos.cargo) {
+    throw new Error('Nombre y cargo son requeridos');
+  }
+
+  return await editarInstitucionDAO(idUsuario, idInstitucion, datos);
 };

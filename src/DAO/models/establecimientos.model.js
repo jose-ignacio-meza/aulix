@@ -1,3 +1,5 @@
+import mongoose from 'mongoose'
+
 const establecimientoSchema = new mongoose.Schema({
   nombre: String,
   domicilio: String,

@@ -1,0 +1,32 @@
+<h2>Agregar Institución</h2>
+
+<form action="/usuario/agregarInstitucion" method="POST">
+  <label for="nombre">Nombre de la institución:</label>
+  <input type="text" name="nombre" required>
+
+  <label for="cargo">Cargo en la institución:</label>
+  <input type="text" name="cargo" required>
+
+  <label for="cursos">Cursos donde presta servicio:</label>
+  <div id="cursos-container">
+    <input type="text" name="cursos[]" placeholder="Ej: 1° A">
+  </div>
+
+  <button type="button" id="agregar-curso">Agregar otro curso</button>
+
+  <br><br>
+  <button type="submit">Guardar institución</button>
+</form>
+
+<script>
+  const container = document.getElementById('cursos-container');
+  const btnAgregar = document.getElementById('agregar-curso');
+
+  btnAgregar.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'cursos[]';
+    input.placeholder = 'Ej: 2° B';
+    container.appendChild(input);
+  });
+</script>

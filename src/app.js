@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.routes.js';
 import {router as datosPersonales} from './routes/datosPersonales.route.js';
 import { router as formularios } from './routes/formularios.routes.js';
 import {router as adminRoutes} from './routes/admin.routes.js';
+import {router as usuarioRouter} from './routes/usuario.routes.js';
 import { verificarToken } from './middlewares/auth.middleware.js';
 import path from 'path';
 import { format } from 'date-fns';
@@ -64,6 +65,7 @@ app.use('', authRoutes);
 app.use('/datos-personales', verificarToken, datosPersonales);
 app.use('/formularios', verificarToken, formularios);
 app.use('/admin', verificarToken, adminRoutes);
+app.use('/usuario', verificarToken, usuarioRouter);
 
 connectDB().on('connected', () => {
   app.listen(PORT, () => {

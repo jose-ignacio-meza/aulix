@@ -31,7 +31,7 @@ const UsuarioSchema = new mongoose.Schema({
   rol: { type: String, enum: ['admin', 'cliente'], default: 'cliente' },
   eliminado: { type: Date, default: null },
   datosPersonales: datosPersonalesSchema,
-  relacionesInstitucionales: [relacionInstitucionalSchema]
+  instituciones: {type:[{nombre:String, cargo:String,cursos:[String],eliminado:{ type: Boolean, default: false }}], default:[]},
 });
 
 UsuarioSchema.methods.comparePassword = async function(candidatePassword) {
