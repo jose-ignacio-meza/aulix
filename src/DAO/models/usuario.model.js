@@ -18,11 +18,19 @@ const datosPersonalesSchema = new mongoose.Schema({
   // podés seguir agregando más campos según el formulario
 }, { _id: false }); // para no generar un _id interno para este objeto embebido
 
-const relacionInstitucionalSchema = new mongoose.Schema({
-  establecimiento: { type: mongoose.Schema.Types.ObjectId, ref: 'Establecimiento' },
-  cargo: String, // o ref a 'Cargo' si lo vas a normalizar también
-  cursos: [String], // o ref a modelo Curso
-}, { _id: false });
+// CursoSchema con cargo específico
+const cursoSchema = new mongoose.Schema({
+  nombre: String,
+  cargo: String,
+  eliminado: { type: Boolean, default: false }
+}, { _id: true });
+
+// Institución con cursos embebidos
+const institucionSchema = new mongoose.Schema({
+  nombre: String,
+  cursos: [cursoSchema],
+  eliminado: { type: Boolean, default: false }
+}, { _id: true });
 
 const UsuarioSchema = new mongoose.Schema({
   nombre: String,
@@ -31,7 +39,7 @@ const UsuarioSchema = new mongoose.Schema({
   rol: { type: String, enum: ['admin', 'cliente'], default: 'cliente' },
   eliminado: { type: Date, default: null },
   datosPersonales: datosPersonalesSchema,
-  instituciones: {type:[{nombre:String, cargo:String,cursos:[String],eliminado:{ type: Boolean, default: false }}], default:[]},
+  instituciones: { type: [institucionSchema], default: [] }
 });
 
 UsuarioSchema.methods.comparePassword = async function(candidatePassword) {
