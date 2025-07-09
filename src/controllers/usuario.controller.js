@@ -6,19 +6,31 @@ export const mostrarAltaInstitucion = (req,res) =>{
     res.status(200).render('./altaInstitucion');
 }
 
-export const altaInstitucion = async (req,res) => {
-    try {
-        const idUsuario = req.usuario._id; // O como tengas guardado el ID en sesión
-        const { nombre, cargo, cursos } = req.body;
+export const altaInstitucion = async (req, res) => {
+  try {
+    const idUsuario = req.usuario._id;
+    const { nombre, cursos } = req.body;
+    console.log('Nombre:'+nombre+' cursos:'+cursos);
+    // Asegurate de que `cursos` venga como array de objetos { nombre, cargo }
+    const nuevaInstitucion = {
+      nombre,
+      cursos: cursos.map(curso => ({
+        nombre: curso.nombre,
+        cargo: curso.cargo,
+        eliminado: false
+      })),
+      eliminado: false
+    };
 
-        await darAltaInstitucion(idUsuario, { nombre, cargo, cursos });
+    await darAltaInstitucion(idUsuario, nuevaInstitucion);
 
-        res.redirect('/usuario/establecimientos'); // redirigí a la vista que corresponda
-    } catch (error) {
-        console.error('Error en controller:', error);
-        res.status(500).send('Error al guardar la institución');
-    }
-}
+    res.redirect('/usuario/instituciones');
+  } catch (error) {
+    console.error('Error en controller:', error);
+    res.status(500).send('Error al guardar la institución');
+  }
+};
+
 
 export const getAllInstituciones = async (req,res) =>{
     try{
@@ -83,17 +95,35 @@ export const vistaEditarInstitucionController = async (req, res) => {
 export const editarInstitucionController = async (req, res) => {
   try {
     const idUsuario = req.usuario._id;
-    const { idInstitucion, nombre, cargo, cursos } = req.body;
+    const { idInstitucion, nombre, cursos } = req.body;
+
+    // Asegurarse de que cursos venga como objeto o array de objetos
+    let cursosFinales = [];
+
+    if (Array.isArray(cursos)) {
+      // Múltiples cursos: cursos es un array de objetos
+      cursosFinales = cursos.map(c => ({
+        nombre: c.nombre,
+        cargo: c.cargo
+      }));
+    } else if (cursos && typeof cursos === 'object') {
+      // Solo un curso enviado
+      cursosFinales = [{ nombre: cursos.nombre, cargo: cursos.cargo }];
+    }
+
+    // Validación adicional opcional
+    if (!nombre || cursosFinales.some(c => !c.nombre || !c.cargo)) {
+      throw new Error('Todos los cursos deben tener nombre y cargo');
+    }
 
     await editarInstitucionService(idUsuario, idInstitucion, {
       nombre,
-      cargo,
-      cursos: Array.isArray(cursos) ? cursos : [cursos]
+      cursos: cursosFinales
     });
 
     res.redirect('/usuario/instituciones');
   } catch (error) {
-    console.error(error);
+    console.error('Error en editarInstitucionController:', error);
     res.status(500).send('Error al editar institución');
   }
 };

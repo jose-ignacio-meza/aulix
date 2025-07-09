@@ -1,39 +1,63 @@
 {{> navbar}}
 <body>
-    <div class="container-app">
-        {{> sidebar}}
-        <div class="main-content">
-            <h2>Editar Institución</h2>
+  <div class="container-app">
+    {{> sidebar}}
+    <div class="main-content">
+      <h2>Editar Institución</h2>
 
-            <form action="/usuario/editarInstitucion" method="POST">
-            <input type="hidden" name="idInstitucion" value="{{idInstitucion}}">
+      <form action="/usuario/editarInstitucion" method="POST">
+        <input type="hidden" name="idInstitucion" value="{{institucion._id}}">
 
-            <label>Nombre:</label>
-            <input type="text" name="nombre" value="{{institucion.nombre}}" required>
+        <label>Nombre de la institución:</label>
+        <input type="text" name="nombre" value="{{institucion.nombre}}" required>
 
-            <label>Cargo:</label>
-            <input type="text" name="cargo" value="{{institucion.cargo}}" required>
-
-            <label>Cursos:</label>
-            <div id="cursos-container">
-                {{#each institucion.cursos}}
-                <input type="text" name="cursos[]" value="{{this}}">
-                {{/each}}
+        <label>Cursos:</label>
+        <div id="cursos-container">
+          {{#each institucion.cursos}}
+            <div class="curso-input" data-index="{{@index}}">
+              <label>Nombre del curso:</label>
+              <input type="text" name="cursos[{{@index}}][nombre]" value="{{this.nombre}}" required>
+              <label>Cargo:</label>
+              <input type="text" name="cursos[{{@index}}][cargo]" value="{{this.cargo}}" required>
+              <button type="button" class="eliminar-curso" style="margin-left: 10px; color: red;">Eliminar</button>
             </div>
-
-            <button type="button" id="agregar-curso">Agregar curso</button>
-            <br><br>
-            <button type="submit">Guardar cambios</button>
-            </form>
-
-            <script>
-            document.getElementById('agregar-curso').addEventListener('click', () => {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.name = 'cursos[]';
-                document.getElementById('cursos-container').appendChild(input);
-            });
-            </script>
+          {{/each}}
         </div>
+
+        <button type="button" id="agregar-curso">Agregar curso</button>
+        <br><br>
+        <button type="submit">Guardar cambios</button>
+      </form>
+
+      <script>
+        let cursoIndex = {{institucion.cursos.length}};
+        const container = document.getElementById('cursos-container');
+        const btnAgregar = document.getElementById('agregar-curso');
+
+        btnAgregar.addEventListener('click', () => {
+          const div = document.createElement('div');
+          div.className = 'curso-input';
+          div.dataset.index = cursoIndex;
+
+          div.innerHTML = `
+            <label>Nombre del curso:</label>
+            <input type="text" name="cursos[${cursoIndex}][nombre]" required placeholder="Ej: 3° C">
+            <label>Cargo:</label>
+            <input type="text" name="cursos[${cursoIndex}][cargo]" required placeholder="Ej: Docente">
+            <button type="button" class="eliminar-curso" style="margin-left: 10px; color: red;">Eliminar</button>
+          `;
+
+          container.appendChild(div);
+          cursoIndex++;
+        });
+
+        container.addEventListener('click', (e) => {
+          if (e.target.classList.contains('eliminar-curso')) {
+            const cursoDiv = e.target.closest('.curso-input');
+            if (cursoDiv) cursoDiv.remove();
+          }
+        });
+      </script>
     </div>
+  </div>
 </body>

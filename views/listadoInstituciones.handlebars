@@ -50,19 +50,30 @@
       <ul class="institucion-list list-group list-group-numbered">
         {{#each instituciones}}
           <li class="list-group-item">
-            <div class="institucion-info">{{this.nombre}} – Cargo: {{this.cargo}}</div>
-            <div class="cursos">Cursos: {{#each this.cursos}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
-            <div class="institucion-actions">
-              <form action="/usuario/eliminarInstitucion" method="POST">
-                <input type="hidden" name="idInstitucion" value="{{this._id}}">
-                <button class="btn btn-danger btn-sm">Eliminar</button>
-              </form>
-              <form action="/usuario/editarInstitucion" method="GET">
-                <input type="hidden" name="idInstitucion" value="{{this._id}}">
-                <button class="btn btn-primary btn-sm">Editar</button>
-              </form>
+          <div class="institucion-info">{{this.nombre}}</div>
+
+          {{#if this.cursos.length}}
+            <div class="cursos">
+              <strong>Cursos:</strong>
+              <ul>
+                {{#each this.cursos}}
+                  <li>{{this.nombre}} – Cargo: {{this.cargo}}</li>
+                {{/each}}
+              </ul>
             </div>
-          </li>
+          {{/if}}
+
+          <div class="institucion-actions">
+            <form action="/usuario/eliminarInstitucion" method="POST">
+              <input type="hidden" name="idInstitucion" value="{{this._id}}">
+              <button class="btn btn-danger btn-sm">Eliminar</button>
+            </form>
+            <form action="/usuario/editarInstitucion" method="GET">
+              <input type="hidden" name="idInstitucion" value="{{this._id}}">
+              <button class="btn btn-primary btn-sm">Editar</button>
+            </form>
+          </div>
+        </li>
         {{/each}}
       </ul>
 

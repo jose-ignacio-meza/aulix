@@ -69,18 +69,26 @@ export const actualizarUsuario = async (id, datos) => {
 
 //metodos para instituciones :-----------------------------------------------
 
-export const darAltaInstitucion = async(idUsuario,institucion)=>{
-  // Validación básica (opcional, podés mejorarla)
-  if (!institucion.nombre || !institucion.cargo) {
-    throw new Error('Nombre y cargo son requeridos');
+export const darAltaInstitucion = async (idUsuario, institucion) => {
+  const { nombre, cursos } = institucion;
+
+  if (!nombre || !Array.isArray(cursos) || cursos.length === 0) {
+    throw new Error('El nombre de la institución y al menos un curso son requeridos');
   }
 
-  institucion.cursos = Array.isArray(institucion.cursos)
-    ? institucion.cursos
-    : [institucion.cursos]; // por si solo hay uno
+  // Verificar que cada curso tenga nombre y cargo
+  for (const curso of cursos) {
+    if (!curso.nombre || !curso.cargo) {
+      throw new Error('Cada curso debe tener nombre y cargo');
+    }
+  }
 
-  return await agregarInstitucion(idUsuario, institucion);
-}
+  // Guardar en la base
+  await Usuario.updateOne(
+    { _id: idUsuario },
+    { $push: { instituciones: institucion } }
+  );
+};
 
 export const getInstituciones = async (idUsuario)=>{
   const instituciones = await traerInstituciones(idUsuario);
@@ -95,10 +103,27 @@ export const restaurarInstitucionService = async(idUsuario, idInstitucion)=> {
   return await restaurarInsititucionesDao(idUsuario, idInstitucion);
 }
 
-export const editarInstitucionService = async (idUsuario, idInstitucion, datos) => {
-  if (!datos.nombre || !datos.cargo) {
-    throw new Error('Nombre y cargo son requeridos');
+export const editarInstitucionService = async (idUsuario, idInstitucion, institucionData) => {
+  const { nombre, cursos } = institucionData;
+
+  if (!nombre || !Array.isArray(cursos) || cursos.length === 0) {
+    throw new Error('Nombre de la institución y al menos un curso son requeridos');
   }
 
-  return await editarInstitucionDAO(idUsuario, idInstitucion, datos);
+  for (const curso of cursos) {
+    if (!curso.nombre || !curso.cargo) {
+      throw new Error('Cada curso debe tener nombre y cargo');
+    }
+  }
+
+  // Actualización del documento embebido
+  return await Usuario.updateOne(
+    { _id: idUsuario, "instituciones._id": idInstitucion },
+    {
+      $set: {
+        "instituciones.$.nombre": nombre,
+        "instituciones.$.cursos": cursos
+      }
+    }
+  );
 };
