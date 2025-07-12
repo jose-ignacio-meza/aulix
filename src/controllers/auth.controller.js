@@ -4,23 +4,23 @@ import bcrypt from 'bcrypt';
 
 export const mostrarHomePage = async(req,res)=>{
   //Consulta a la db por las instituciones de este cliente, y a la db por los roles predefinidos cargados.
-  const instituciones = [
-  { nombre: "Jardin 910" },
-  { nombre: "Escuela Primaria N°10" },
-  { nombre: "E.E.S.T N°2" }
-];
+  const usuario = await Usuario.findById(req.usuario).lean();
+  
+  const instituciones = usuario.instituciones
+  .filter(inst => !inst.eliminado)
+  .map(inst => ({
+    nombre: inst.nombre,
+    cursos: inst.cursos
+      .filter(curso => !curso.eliminado)
+      .map(curso => ({
+        nombre: curso.nombre,
+        cargo: curso.cargo
+      }))
+  }));
 
-const roles = [
-  { nombre: "MIT" },
-  { nombre: "MI" },
-  { nombre: "M" }
-];
   res.render('index', {
     usuario: req.usuario,
-    instituciones,
-    roles,
-    institucionesJson: JSON.stringify(instituciones),
-    rolesJson: JSON.stringify(roles)
+    instituciones 
   });
 }
 

@@ -80,3 +80,15 @@ export const deleteFormulario = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+//Distintos Formularios
+
+export const planificacionAnual = async (req, res) => {
+    const { datos } = req.body;
+    const parsed = typeof datos === 'string' ? JSON.parse(datos) : datos;
+
+    res.render('formularios/formPlanificacionAnual', {
+        datos: parsed
+    });
+};

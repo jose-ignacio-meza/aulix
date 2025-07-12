@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Planificación Anual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #f8f9fa;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+    }
+    .btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <form method="POST" action="/formularios/enviar-planificacion-anual">
+    <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
+
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
+
+    <label for="apellido">Apellido</label>
+    <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
+
+    <label for="dni">DNI</label>
+    <input type="text" id="dni" name="dni" value="{{datos.usuario.datosPersonales.dni}}">
+
+    <label for="institucion">Institución</label>
+    <input type="text" id="institucion" name="institucion" value="{{datos.usuario.institucion}}">
+
+    <label for="curso">Curso</label>
+    <input type="text" id="curso" name="curso" value="{{datos.usuario.curso}}">
+
+    <label for="anio">Año Lectivo</label>
+    <input type="text" id="anio" name="anio" placeholder="Ej: 2025">
+
+    <label for="objetivos">Objetivos Generales</label>
+    <textarea id="objetivos" name="objetivos" rows="4" placeholder="Escriba los objetivos generales..."></textarea>
+
+    <label for="contenidos">Contenidos</label>
+    <textarea id="contenidos" name="contenidos" rows="4" placeholder="Escriba los contenidos a desarrollar..."></textarea>
+
+    <label for="metodologia">Metodología</label>
+    <textarea id="metodologia" name="metodologia" rows="4" placeholder="Explique la metodología de trabajo..."></textarea>
+
+    <label for="evaluacion">Criterios de Evaluación</label>
+    <textarea id="evaluacion" name="evaluacion" rows="3" placeholder="Explique cómo se evaluará el trabajo..."></textarea>
+
+    <button type="submit" class="btn">Guardar y Continuar</button>
+  </form>
+
+</body>
+</html>
