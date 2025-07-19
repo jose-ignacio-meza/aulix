@@ -56,9 +56,9 @@ export const procesarLogin = async (req, res) => {
 
     if (usuario.rol === 'admin') {
       res.redirect('/admin/index'); // a la vista principal de admin
+    }else {
+      res.redirect('/index'); // a la vista principal
     }
-
-    res.redirect('/index'); // a la vista principal
   } catch (error) {
     res.render('login', { error: error.message });
   }

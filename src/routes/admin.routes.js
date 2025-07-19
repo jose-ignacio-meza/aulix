@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {soloAdmin} from '../middlewares/roles.middleware.js';
 import * as adminController from '../controllers/admin.controller.js';
 import * as plantillaController from '../controllers/plantillasFormularios.controller.js';
+import * as contenidoController from '../controllers/contenido.controller.js';
+import * as areaController from '../controllers/area.controller.js';
 
 const router = Router();
 
@@ -23,5 +25,22 @@ router.get('/plantillas', soloAdmin, plantillaController.obtenerTodasLasPlantill
 router.post('/actualizarPlantilla/:id', soloAdmin, plantillaController.actualizarPlantilla);
 router.get('/eliminarPlantilla/:id', soloAdmin, plantillaController.eliminarPlantilla);
 router.get('/restaurarPlantilla/:id', soloAdmin, plantillaController.restaurarPlantilla)
+
+//Rutas para Contenido
+router.get('/listaContenido', soloAdmin, contenidoController.listarContenido);
+router.get('/crearContenido', soloAdmin, contenidoController.mostrarCrearContenido);
+router.post('/crearContenido', soloAdmin, contenidoController.crearContenido);
+router.get('/editarContenido/:id', soloAdmin, contenidoController.mostrarEditarContenido);
+router.post('/editarContenido/:id', soloAdmin, contenidoController.editarContenido);
+router.post('/eliminarContenido/:id', soloAdmin, contenidoController.eliminarContenido);
+
+//Rutas para areas
+router.get('/areas', soloAdmin, areaController.listarAreas);
+router.get('/nuevaArea', soloAdmin, areaController.mostrarNuevaArea);
+router.post('/nuevaArea', soloAdmin, areaController.nuevaArea);
+router.get('/editarArea/:id', soloAdmin, areaController.mostrarEditarArea);
+router.post('/editarArea/:id', soloAdmin, areaController.editarArea);
+router.post('/eliminarArea/:id', soloAdmin, areaController.eliminarArea);
+
 
 export {router};

@@ -1,0 +1,153 @@
+<!-- views/admin/listarContenido.handlebars -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listar Contenidos</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #f4f8fb;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 80%;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            padding: 32px;
+        }
+        h1 {
+            color: #34495e;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        .filter-area {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .filter-area label {
+            font-weight: 500;
+        }
+        .filter-area select {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #b2bec3;
+            background: #eaf0f6;
+            color: #34495e;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f8fafc;
+        }
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+        }
+        th {
+            background: #e3eaf2;
+            color: #34495e;
+            font-weight: 600;
+            border-bottom: 2px solid #b2bec3;
+        }
+        tr:nth-child(even) {
+            background: #f0f4f8;
+        }
+        tr:hover {
+            background: #eaf0f6;
+        }
+        .btn {
+            padding: 7px 18px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 6px;
+            transition: background 0.2s;
+        }
+        .btn-edit {
+            background: #2980b9;
+            color: #fff;
+        }
+        .btn-edit:hover {
+            background: #2471a3;
+        }
+        .btn-delete {
+            background: #6c7a89;
+            color: #fff;
+        }
+        .btn-delete:hover {
+            background: #566573;
+        }
+    </style>
+</head>
+
+{{> navbar}}
+
+<body>
+    
+    <div class="container-app">
+        {{> sidebar}}
+        <div class="main-content"  style="justify-content: flex-start;">
+            <div class="container">
+                <h1>Listado de Contenidos</h1>
+                <div class="filter-area">
+                    <label for="areaFilter">Filtrar por área:</label>
+                    <select id="areaFilter" onchange="filtrarPorArea()">
+                        <option value="todas">Todas</option>
+                        {{#each areas}}
+                            <option value="{{this._id}}">{{this.nombre}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <table id="tablaContenidos">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Área</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each contenidos}}
+                        <tr data-area="{{this.area}}">
+                            <td>{{this.titulo}}</td>
+                            <td>{{this.descripcion}}</td>
+                            <td>{{this.area}}</td>
+                            <td>
+                                <a href="/admin/editarContenido/{{this._id}}" class="btn btn-edit">Modificar</a>
+                                <form action="/admin/eliminarContenido/{{this._id}}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que desea eliminar este contenido?');">Eliminar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            <script>
+                function filtrarPorArea() {
+                    const filtro = document.getElementById('areaFilter').value;
+                    const filas = document.querySelectorAll('#tablaContenidos tbody tr');
+                    filas.forEach(fila => {
+                        if (filtro === 'todas' || fila.getAttribute('data-area') === filtro) {
+                            fila.style.display = '';
+                        } else {
+                            fila.style.display = 'none';
+                        }
+                    });
+                }
+            </script>
+        </div>
+    </div>
+</body>
+</html>

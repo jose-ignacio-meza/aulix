@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Contenido</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Roboto', Arial, sans-serif;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 540px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            padding: 32px 40px;
+        }
+        h2 {
+            color: #34495e;
+            margin-bottom: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f4f8;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+        button {
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #21618c;
+        }
+    </style>
+</head>
+{{> navbar}}
+
+<body>
+    
+    <div class="container-app">
+    {{> sidebar}}
+        <div class="main-content" style="justify-content: flex-start;">
+            <div class="container">
+                <h2>Editar Contenido</h2>
+                <form action="/admin/editarContenido/{{contenido._id}}" method="POST">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" value="{{contenido.titulo}}" required>
+
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="5" required>{{contenido.descripcion}}</textarea>
+                    
+                    <label for="area">Área</label>
+                    <select id="area" name="area" required>
+                        <option value="">Seleccione un área</option>
+                        {{#each areas}}
+                            <option value="{{this}}" {{#if (eq this ../contenido.area)}}selected{{/if}}>{{this}}</option>
+                        {{/each}}
+                    </select>
+
+                    <button type="submit">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
