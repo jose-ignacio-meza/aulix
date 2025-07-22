@@ -163,13 +163,7 @@
                         id: "institucion",
                         pregunta: "¿En qué institución trabaja?",
                         tipo: "botones-con-nueva",
-                        opciones: instituciones.map(i => i.nombre)
-                    },
-                    {
-                        id: "nuevoInstitucion",
-                        pregunta: "¿Desea agregar una nueva institución?",
-                        tipo: "select-input",
-                        opciones: ["Sí", "No"]
+                        opciones: [...instituciones.map(i => i.nombre), "+ Nueva institución"]
                     },
                     {
                         id: "anio",
@@ -253,6 +247,13 @@
                     const paso = pasos[pasoActual];
                     let html = `<label><strong>${paso.pregunta}</strong></label><br><div class="opciones-botones">`;
 
+                    // Saltear el paso de curso si ya se cargó uno nuevo
+                    if (paso.id === "curso" && respuestas._cursoNuevo) {
+                        pasoActual++;
+                        renderPaso();
+                        return;
+                    }
+
                     if (paso.tipo === "select" || paso.tipo === "select-input" || paso.tipo === "botones-con-nueva") {
                         const opciones = paso.opciones.map(opt => {
                             const valor = typeof opt === "string" ? opt : opt.valor;
@@ -278,6 +279,43 @@
                     document.querySelectorAll('.btn-opcion').forEach(btn => {
                         btn.addEventListener('click', () => {
                             const valor = btn.getAttribute('data-valor');
+                            
+                            if (paso.id === "institucion") {
+                                if (valor === "+ Nueva institución") {
+                                    // Mostrar input para nueva institución
+                                    contenedor.innerHTML += `
+                                        <input type="text" id="nuevaInstitucionInput" class="form-control" placeholder="Ingrese nueva institución" style="margin-top: 0.5rem;">
+                                        <button class="btn" id="confirmarNuevaInstitucion" style="margin-top: 0.5rem;">Confirmar</button>
+                                    `;
+                                    document.getElementById("confirmarNuevaInstitucion").addEventListener("click", () => {
+                                        const nuevaInstitucion = document.getElementById("nuevaInstitucionInput").value.trim();
+                                        if (!nuevaInstitucion) return alert("Ingrese el nombre de la nueva institución.");
+                                        respuestas["institucion"] = nuevaInstitucion;
+
+                                        // Mostrar formulario para nuevo curso y cargo
+                                        contenedor.innerHTML += `
+                                            <input type="text" id="nuevoCursoInput" class="form-control" placeholder="Ingrese nuevo curso" style="margin-top: 0.5rem;">
+                                            <input type="text" id="nuevoCargoInput" class="form-control" placeholder="Ingrese cargo para el curso" style="margin-top: 0.5rem;">
+                                            <button class="btn" id="confirmarNuevoCurso" style="margin-top: 0.5rem;">Confirmar Curso</button>
+                                        `;
+                                        document.getElementById("confirmarNuevoCurso").addEventListener("click", () => {
+                                            const nuevoCurso = document.getElementById("nuevoCursoInput").value.trim();
+                                            const nuevoCargo = document.getElementById("nuevoCargoInput").value.trim();
+                                            if (!nuevoCurso || !nuevoCargo) return alert("Complete ambos campos.");
+                                            respuestas["curso"] = nuevoCurso;
+                                            respuestas["cargo"] = nuevoCargo;
+                                            respuestas._cursoNuevo = true; 
+                                            pasoActual++;
+                                            renderPaso();
+                                        });
+                                    });
+                                    return; // No avanzar hasta que confirme
+                                } else {
+                                    respuestas[paso.id] = valor;
+                                    pasoActual++;
+                                    renderPaso();
+                                }
+                            }
 
                             if (valor === "_nuevo") {
                                 document.getElementById(`nuevo-${paso.id}`).style.display = "block";
@@ -319,7 +357,7 @@
                         });
                     });
                 }
-
+                
                 renderPaso();
             </script>
         {{/if}}
