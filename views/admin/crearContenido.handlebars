@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Crear Nuevo Contenido</title>
     <style>
+        /* ... Estilos existentes ... */
         body {
             background-color: #f4f8fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -13,9 +14,9 @@
         }
         .form-container {
             background: #ffffff;
-            max-width: 400px;
-            margin: 40px auto;
-            padding: 32px 24px;
+            /*max-width: 1000px; Cambiamos de 400px a 1000px 
+            margin: 40px auto;*/
+            padding: 32px 32px;
             border-radius: 8px;
             box-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
         }
@@ -60,21 +61,104 @@
         button:hover {
             background: #21618c;
         }
+
+        /* Switch estilo tecla */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .switch-label {
+            margin-right: 10px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2980b9;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Items dinámicos */
+        .items-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        
+        .item-row input[type="text"] {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .item-row button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .item-row textarea {
+            flex: 1;
+            resize: vertical;
+            font-size: 15px;
+            padding: 8px 10px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f6fa;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        .item-row textarea:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
     </style>
 </head>
 {{> navbar}}
 <body>
-    
     <div class="container-app">
         {{> sidebar}}
-        <div class="main-content" style="justify-content: flex-start;">
+        <div class="main-content" style="justify-content: flex-start; align-items: stretch;">
             <div class="form-container">
                 <h2>Nuevo Contenido</h2>
                 <form action="/admin/crearContenido" method="POST">
-                    <label for="titulo">Título del Contenido</label>
-                    <input type="text" id="titulo" name="titulo" required placeholder="Ingrese el título">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" required placeholder="Ingrese la descripción"></textarea>
+                    
                     <label for="area">Área</label>
                     <select id="area" name="area" required>
                         <option value="" disabled selected>Seleccione un área</option>
@@ -83,10 +167,104 @@
                         {{/each}}
                     </select>
 
+                    <label for="titulo">Título del Contenido</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ingrese el título">
+
+                    <!-- Switch -->
+                    <div class="switch-container">
+                        <span class="switch-label">Agregar ítems de actividades</span>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleItems">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Sección de items dinámicos -->
+                    <div class="items-container" id="itemsContainer">
+                        <label for="itemInput">Items</label>
+                        <div id="itemsList"></div>
+                        <div class="item-row">
+                            <input type="text" id="itemInput" placeholder="Descripción del ítem">
+                            <button type="button" id="addItemBtn">Agregar</button>
+                        </div>
+                    </div>
+
+                    <!-- Campo oculto para enviar los ítems -->
+                    <input type="hidden" name="items" id="itemsField">
+
                     <button type="submit">Crear Contenido</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+        const toggle = document.getElementById('toggleItems');
+        const container = document.getElementById('itemsContainer');
+        const itemInput = document.getElementById('itemInput');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemsList = document.getElementById('itemsList');
+        const itemsField = document.getElementById('itemsField');
+
+        let items = [];
+
+        toggle.addEventListener('change', () => {
+            container.style.display = toggle.checked ? 'block' : 'none';
+        });
+
+        addItemBtn.addEventListener('click', () => {
+            const value = itemInput.value.trim();
+            if (value) {
+                items.push(value);
+                renderItems();
+                itemInput.value = '';
+                itemsField.value = JSON.stringify(items); // para enviar al backend
+            }
+        });
+
+       function renderItems() {
+            itemsList.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'item-row';
+
+                div.innerHTML = `
+                    <textarea id="item-${index}" rows="2" disabled>${item}</textarea>
+                    <button type="button" onclick="enableEdit(${index})">Modificar</button>
+                    <button type="button" onclick="removeItem(${index})">Eliminar</button>
+                `;
+                itemsList.appendChild(div);
+            });
+            itemsField.value = JSON.stringify(items);
+        }
+
+        function enableEdit(index) {
+            const input = document.getElementById(`item-${index}`);
+            input.disabled = false;
+            input.focus();
+
+            const modifyBtn = input.nextElementSibling;
+            modifyBtn.textContent = 'Guardar';
+            modifyBtn.onclick = () => saveEdit(index);
+        }
+
+        function saveEdit(index) {
+            const input = document.getElementById(`item-${index}`);
+            const newValue = input.value.trim();
+
+            if (newValue) {
+                items[index] = newValue;
+                renderItems();
+            } else {
+                alert('El ítem no puede estar vacío.');
+            }
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+            itemsField.value = JSON.stringify(items);
+        }
+    </script>
 </body>
 </html>

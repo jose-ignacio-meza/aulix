@@ -65,6 +65,41 @@
         button:hover {
             background: #21618c;
         }
+        
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        
+        .item-row input[type="text"] {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .item-row button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .item-row textarea {
+            flex: 1;
+            resize: vertical;
+            font-size: 15px;
+            padding: 8px 10px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f6fa;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        .item-row textarea:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
     </style>
 </head>
 {{> navbar}}
@@ -77,24 +112,86 @@
             <div class="container">
                 <h2>Editar Contenido</h2>
                 <form action="/admin/editarContenido/{{contenido._id}}" method="POST">
-                    <label for="titulo">Título</label>
-                    <input type="text" id="titulo" name="titulo" value="{{contenido.titulo}}" required>
-
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" name="descripcion" rows="5" required>{{contenido.descripcion}}</textarea>
                     
                     <label for="area">Área</label>
                     <select id="area" name="area" required>
                         <option value="">Seleccione un área</option>
                         {{#each areas}}
-                            <option value="{{this}}" {{#if (eq this ../contenido.area)}}selected{{/if}}>{{this}}</option>
+                            <option value="{{this._id}}" {{#if (eq this._id ../contenido.area._id)}}selected{{/if}}>
+                                {{this.nombre}}
+                            </option>
                         {{/each}}
                     </select>
+
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" value="{{contenido.titulo}}" required>
+
+                    <h3>Items del contenido</h3>
+                    <div id="itemsContainer" data-id="{{contenido._id}}">
+                        {{#each contenido.items}}
+                            <div class="item-row">
+                                <textarea name="items[]">{{this}}</textarea>
+                                <button type="button" class="btn-eliminar" data-index="{{@index}}">Eliminar</button>
+                            </div>
+                        {{/each}}
+                    </div>
+                    <button type="button" onclick="agregarItem()">Agregar Item</button>
 
                     <button type="submit">Guardar Cambios</button>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+        function agregarItem() {
+            const container = document.getElementById('itemsContainer');
+            const div = document.createElement('div');
+            div.classList.add('item-row');
+            // Agregamos textarea y botón eliminar
+            div.innerHTML = `
+                <textarea name="items[]" rows="2" required></textarea>
+                <button type="button" class="btn-eliminar-item">Eliminar</button>
+            `;
+            container.appendChild(div);
+            
+            // Agregar listener al botón eliminar recién creado
+            div.querySelector('.btn-eliminar-item').addEventListener('click', () => {
+                div.remove();
+            });
+        }
+
+        const contenidoId = document.getElementById('itemsContainer').dataset.id;
+
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const index = this.getAttribute('data-index');
+                const confirmacion = confirm("¿Seguro que querés eliminar este ítem?");
+                if (confirmacion) {
+                    console.log( `Eliminando ítem en el índice:${index} del contenido con id ${contenidoId}`);
+                    fetch(`/admin/contenidos/eliminar-item/${contenidoId}/${index}`, {
+                        method: 'DELETE'
+                    })
+                    .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text(); // por si es HTML
+                        throw new Error(`Error en la respuesta: ${text}`);
+                    }
+                    return res.json();
+                    })
+                    .then(data => {
+                    if (data.success) {
+                         location.reload(); // 🔄 Recarga la página actual
+                    } else {
+                        console.error('Falló del lado del servidor:', data.message);
+                    }
+                    })
+                    .catch(err => {
+                    console.error('Error general:', err.message);
+                    });
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>

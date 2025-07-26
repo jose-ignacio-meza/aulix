@@ -112,17 +112,23 @@
                     <thead>
                         <tr>
                             <th>Título</th>
-                            <th>Descripción</th>
+                            <th>Items</th>
                             <th>Área</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {{#each contenidos}}
-                        <tr data-area="{{this.area}}">
+                        <tr data-area="{{this.area._id}}">
                             <td>{{this.titulo}}</td>
-                            <td>{{this.descripcion}}</td>
-                            <td>{{this.area}}</td>
+                            <td>
+                                <ul>
+                                    {{#each this.items}}
+                                        <li>{{this}}</li>
+                                    {{/each}}
+                                </ul>
+                            </td>
+                            <td>{{this.area.nombre}}</td>
                             <td>
                                 <a href="/admin/editarContenido/{{this._id}}" class="btn btn-edit">Modificar</a>
                                 <form action="/admin/eliminarContenido/{{this._id}}" method="POST" style="display:inline;">

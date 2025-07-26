@@ -11,15 +11,15 @@ const contenidoSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    descripcion: {
+    items: [{
         type: String,
         required: true,
         trim: true
-    },
+    }],
     area: {
-        type: String,
-        required: true,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Area', // ← nombre del modelo relacionado (como está registrado en mongoose.model)
+        required: true
     },
     fechaAlta: {
         type: Date,

@@ -33,6 +33,7 @@ router.post('/crearContenido', soloAdmin, contenidoController.crearContenido);
 router.get('/editarContenido/:id', soloAdmin, contenidoController.mostrarEditarContenido);
 router.post('/editarContenido/:id', soloAdmin, contenidoController.editarContenido);
 router.post('/eliminarContenido/:id', soloAdmin, contenidoController.eliminarContenido);
+router.delete('/contenidos/eliminar-item/:idContenido/:index', soloAdmin, contenidoController.eliminarItemContenido);
 
 //Rutas para areas
 router.get('/areas', soloAdmin, areaController.listarAreas);
