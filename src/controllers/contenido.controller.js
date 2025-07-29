@@ -14,7 +14,6 @@ const obtenerAreas = async () => {
 export const listarContenido = async (req, res) => {
     try {
         const contenidos = await contenidoService.obtenerContenido();
-        
         const areas = await obtenerAreas();
         res.render('admin/listaContenido', { contenidos ,areas});
     } catch (error) {
@@ -36,11 +35,9 @@ export const mostrarCrearContenido = async (req, res) => {
 export const crearContenido = async (req, res) => {
     try {
         console.log('Nuevo contenido:' + JSON.stringify(req.body));
-        // Validar que se envíen los ítems
-        if (!req.body.items || req.body.items.length === 0) {
-            return res.status(400).render('admin/crearContenido', { message: 'Debe ingresar al menos un ítem' });
+        if(req.body.items || req.body.items.length !== 0) {
+            req.body.items = JSON.parse(req.body.items);
         }
-        req.body.items = JSON.parse(req.body.items);
         const nuevoContenido = await contenidoService.crearContenido(req.body);
         if (!nuevoContenido) {
             return res.status(400).render('admin/crearContenido', { message: 'Error al crear contenido' });

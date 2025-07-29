@@ -13,7 +13,6 @@ const contenidoSchema = new mongoose.Schema({
     },
     items: [{
         type: String,
-        required: true,
         trim: true
     }],
     area: {
