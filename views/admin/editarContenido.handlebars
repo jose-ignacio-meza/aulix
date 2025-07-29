@@ -126,7 +126,7 @@
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" value="{{contenido.titulo}}" required>
 
-                    <h3>Items del contenido</h3>
+                    <h3>Contenidos del bloque</h3>
                     <div id="itemsContainer" data-id="{{contenido._id}}">
                         {{#each contenido.items}}
                             <div class="item-row">
@@ -135,7 +135,7 @@
                             </div>
                         {{/each}}
                     </div>
-                    <button type="button" onclick="agregarItem()">Agregar Item</button>
+                    <button type="button" onclick="agregarItem()">Agregar Contenido</button>
 
                     <button type="submit">Guardar Cambios</button>
                 </form>
