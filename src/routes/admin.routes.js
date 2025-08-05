@@ -48,9 +48,11 @@ router.post('/eliminarArea/:id', soloAdmin, areaController.eliminarArea);
 // Rutas para propósitos
 router.get('/propositos', soloAdmin, propositoController.listarPropositosController);
 router.get('/propositos/:id', soloAdmin, propositoController.obtenerPropositoPorIdController);
+router.get('/editarProposito/:id', soloAdmin, propositoController.mostrarEditarProposito);
+router.get('/crearProposito', soloAdmin, propositoController.mostrarCrearProposito);
 router.post('/propositos', soloAdmin, propositoController.nuevoPropositoController);
-router.put('/propositos/:id', soloAdmin, propositoController.actualizarPropositoController);
-router.delete('/propositos/:id', soloAdmin, propositoController.eliminarPropositoController);
+router.post('/editarPropositos/:id', soloAdmin, propositoController.actualizarPropositoController);
+router.post('/eliminarPropositos/:id', soloAdmin, propositoController.eliminarPropositoController);
 router.delete('/propositos/eliminar-item/:idProposito/:index', soloAdmin, propositoController.eliminarItemPropositoController);
 
 export {router};

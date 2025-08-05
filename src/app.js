@@ -12,6 +12,8 @@ import { verificarToken } from './middlewares/auth.middleware.js';
 import path from 'path';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import session from 'express-session';
+import flash from 'connect-flash';
 
 dotenv.config();
 const app = express();
@@ -54,11 +56,20 @@ app.set('view engine', 'handlebars');
 app.set('views', './views');
 //Fin config Handlebars
 
-/*
-app.get('/', verificarToken, (req, res) => {
-  console.log('Usuario autenticado:', req.usuario);
-  res.render('index', { usuario: req.usuario, });
-});*/
+app.use(session({
+    secret: 'mi_secreto',
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(flash());
+
+// Middleware para pasar los mensajes a las vistas
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success');
+    res.locals.error_msg = req.flash('error');
+    next();
+});
 
 // Rutas
 app.use('', authRoutes);

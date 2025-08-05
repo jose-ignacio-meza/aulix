@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Nuevo Contenido</title>
+    <style>
+        /* ... Estilos existentes ... */
+        body {
+            background-color: #f4f8fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+        .form-container {
+            background: #ffffff;
+            /*max-width: 1000px; Cambiamos de 400px a 1000px 
+            margin: 40px auto;*/
+            padding: 32px 32px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.08);
+        }
+        h2 {
+            text-align: center;
+            color: #2980b9;
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f6fa;
+            color: #2c3e50;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        input:focus, select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #21618c;
+        }
+
+        /* Switch estilo tecla */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .switch-label {
+            margin-right: 10px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2980b9;
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Items dinámicos */
+        .items-container {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        
+        .item-row input[type="text"] {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .item-row button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .item-row textarea {
+            flex: 1;
+            resize: vertical;
+            font-size: 15px;
+            padding: 8px 10px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f6fa;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        .item-row textarea:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+    </style>
+</head>
+{{> navbar}}
+<body>
+    <div class="container-app">
+        {{> sidebar}}
+        <div class="main-content" style="justify-content: flex-start; align-items: stretch;">
+            <div class="form-container">
+                <h2>Nuevo Propósito</h2>
+                <form action="/admin/propositos" method="POST">
+                    
+                    <label for="area">Área</label>
+                    <select id="area" name="area" required>
+                        <option value="" disabled selected>Seleccione un área</option>
+                        {{#each areas}}
+                            <option value="{{this._id}}">{{this.nombre}}</option>
+                        {{/each}}
+                    </select>
+
+                    <label for="titulo">Título del Propósito</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ingrese el título">
+
+                    <!-- Sección de items dinámicos -->
+                    <div class="items-container" id="itemsContainer">
+                        <label for="itemInput">Propósito</label>
+                        <div id="itemsList"></div>
+                        <div class="item-row">
+                            <input type="text" id="itemInput" placeholder="Descripción del Propósito">
+                            <button type="button" id="addItemBtn">Agregar</button>
+                        </div>
+                    </div>
+
+                    <!-- Campo oculto para enviar los ítems -->
+                    <input type="hidden" name="items" id="itemsField">
+    
+                    <button type="submit">Crear Contenido</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toggle = document.getElementById('toggleItems');
+        const container = document.getElementById('itemsContainer');
+        const itemInput = document.getElementById('itemInput');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemsList = document.getElementById('itemsList');
+        const itemsField = document.getElementById('itemsField');
+
+        let items = [];
+        container.style.display = 'block';
+        addItemBtn.addEventListener('click', () => {
+            const value = itemInput.value.trim();
+            if (value) {
+                items.push(value);
+                renderItems();
+                itemInput.value = '';
+                itemsField.value = JSON.stringify(items); // para enviar al backend
+            }
+        });
+
+       function renderItems() {
+            itemsList.innerHTML = '';
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'item-row';
+
+                div.innerHTML = `
+                    <textarea id="item-${index}" rows="2" disabled>${item}</textarea>
+                    <button type="button" onclick="enableEdit(${index})">Modificar</button>
+                    <button type="button" onclick="removeItem(${index})">Eliminar</button>
+                `;
+                itemsList.appendChild(div);
+            });
+            itemsField.value = JSON.stringify(items);
+        }
+
+        function enableEdit(index) {
+            const input = document.getElementById(`item-${index}`);
+            input.disabled = false;
+            input.focus();
+
+            const modifyBtn = input.nextElementSibling;
+            modifyBtn.textContent = 'Guardar';
+            modifyBtn.onclick = () => saveEdit(index);
+        }
+
+        function saveEdit(index) {
+            const input = document.getElementById(`item-${index}`);
+            const newValue = input.value.trim();
+
+            if (newValue) {
+                items[index] = newValue;
+                renderItems();
+            } else {
+                alert('El ítem no puede estar vacío.');
+            }
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+            itemsField.value = JSON.stringify(items);
+        }
+
+        // Validación al enviar
+        document.querySelector('form').addEventListener('submit', function (event) {
+            if (items.length === 0) {
+                event.preventDefault();
+                swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: 'Debe agregar al menos un ítem al propósito.',
+                });
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Contenido</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f7fa;
+            font-family: 'Roboto', Arial, sans-serif;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 540px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            padding: 32px 40px;
+        }
+        h2 {
+            color: #34495e;
+            margin-bottom: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2980b9;
+            font-weight: 500;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f4f8;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+        button {
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #21618c;
+        }
+        
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        
+        .item-row input[type="text"] {
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .item-row button {
+            width: auto;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .item-row textarea {
+            flex: 1;
+            resize: vertical;
+            font-size: 15px;
+            padding: 8px 10px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+            background: #f0f6fa;
+            color: #2c3e50;
+            transition: border-color 0.2s;
+        }
+        .item-row textarea:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+    </style>
+</head>
+{{> navbar}}
+
+<body>
+    
+    <div class="container-app">
+    {{> sidebar}}
+        <div class="main-content" style="justify-content: flex-start;">
+            <div class="container">
+                <h2>Editar Proposito</h2>
+                <form action="/admin/editarPropositos/{{proposito._id}}" method="POST">
+        
+                    <label for="area">Área</label>
+                    <select id="area" name="area" required>
+                        <option value="">Seleccione un área</option>
+                        {{#each areas}}
+                            <option value="{{this._id}}" {{#if (eq this._id ../proposito.area._id)}}selected{{/if}}>
+                                {{this.nombre}}
+                            </option>
+                        {{/each}}
+                    </select>
+
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" value="{{proposito.titulo}}" required>
+
+                    <h3>Propositos</h3>
+                    <div id="itemsContainer" data-id="{{proposito._id}}">
+                        {{#each proposito.items}}
+                            <div class="item-row">
+                                <textarea name="items[]">{{this}}</textarea>
+                                <button type="button" class="btn-eliminar" data-index="{{@index}}">Eliminar</button>
+                            </div>
+                        {{/each}}
+                    </div>
+                    <button type="button" onclick="agregarItem()">Agregar Contenido</button>
+
+                    <button type="submit">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        function agregarItem() {
+            const container = document.getElementById('itemsContainer');
+            const div = document.createElement('div');
+            div.classList.add('item-row');
+            // Agregamos textarea y botón eliminar
+            div.innerHTML = `
+                <textarea name="items[]" rows="2" required></textarea>
+                <button type="button" class="btn-eliminar-item">Eliminar</button>
+            `;
+            container.appendChild(div);
+            
+            // Agregar listener al botón eliminar recién creado
+            div.querySelector('.btn-eliminar-item').addEventListener('click', () => {
+                const container = document.getElementById('itemsContainer');
+                const total = container.querySelectorAll('.item-row').length;
+                if (total > 1) {
+                    div.remove();
+                } else {
+                    alert('Debe existir al menos un ítem.');
+                }
+            });
+        }
+
+        const propositoId = document.getElementById('itemsContainer').dataset.id;
+        console.log(`ID del propósito: ${propositoId}`);
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const container = document.getElementById('itemsContainer');
+                const total = container.querySelectorAll('.item-row').length;
+
+                if (total <= 1) {
+                    alert('Debe existir al menos un ítem.');
+                    return;
+                }
+
+                const index = this.getAttribute('data-index');
+                const confirmacion = confirm("¿Seguro que querés eliminar este ítem?");
+                if (!confirmacion) return;
+
+                console.log(`Eliminando ítem en el índice:${index} del propósito con id ${propositoId}`);
+                fetch(`/admin/propositos/eliminar-item/${propositoId}/${index}`, {
+                    method: 'DELETE'
+                })
+                .then(async res => {
+                    if (!res.ok) {
+                        const text = await res.text();
+                        throw new Error(`Error en la respuesta: ${text}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Remuevo el item del HTML sin recargar
+                        this.closest('.item-row').remove();  
+                    } else {
+                        console.error('Falló del lado del servidor:', data.message);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error general:', err.message);
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>

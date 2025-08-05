@@ -98,7 +98,7 @@
         {{> sidebar}}
         <div class="main-content"  style="justify-content: flex-start;">
             <div class="container">
-                <h1>Listado de Contenidos</h1>
+                <h1>{{title}}</h1>
                 <div class="filter-area">
                     <label for="areaFilter">Filtrar por área:</label>
                     <select id="areaFilter" onchange="filtrarPorArea()">
@@ -108,7 +108,7 @@
                         {{/each}}
                     </select>
                 </div>
-                <table id="tablaContenidos">
+                <table id="tablaPropositos">
                     <thead>
                         <tr>
                             <th>Bloques</th>
@@ -118,7 +118,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{#each contenidos}}
+                        {{#each propositos}}
                         <tr data-area="{{this.area._id}}">
                             <td>{{this.titulo}}</td>
                             <td>
@@ -130,9 +130,9 @@
                             </td>
                             <td>{{this.area.nombre}}</td>
                             <td>
-                                <a href="/admin/editarContenido/{{this._id}}" class="btn btn-edit">Modificar</a>
-                                <form action="/admin/eliminarContenido/{{this._id}}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que desea eliminar este contenido?');">Eliminar</button>
+                                <a href="/admin/editarProposito/{{this._id}}" class="btn btn-edit">Modificar</a>
+                                <form action="/admin/eliminarPropositos/{{this._id}}" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-delete" onclick="return confirm('¿Seguro que desea eliminar este Proposito?');">Eliminar</button>
                                 </form>
                             </td>
                         </tr>
@@ -143,7 +143,7 @@
             <script>
                 function filtrarPorArea() {
                     const filtro = document.getElementById('areaFilter').value;
-                    const filas = document.querySelectorAll('#tablaContenidos tbody tr');
+                    const filas = document.querySelectorAll('#tablaPropositos tbody tr');
                     filas.forEach(fila => {
                         if (filtro === 'todas' || fila.getAttribute('data-area') === filtro) {
                             fila.style.display = '';
