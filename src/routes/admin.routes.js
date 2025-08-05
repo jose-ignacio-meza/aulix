@@ -4,6 +4,7 @@ import * as adminController from '../controllers/admin.controller.js';
 import * as plantillaController from '../controllers/plantillasFormularios.controller.js';
 import * as contenidoController from '../controllers/contenido.controller.js';
 import * as areaController from '../controllers/area.controller.js';
+import * as propositoController from '../controllers/proposito.controller.js';
 
 const router = Router();
 
@@ -43,5 +44,13 @@ router.get('/editarArea/:id', soloAdmin, areaController.mostrarEditarArea);
 router.post('/editarArea/:id', soloAdmin, areaController.editarArea);
 router.post('/eliminarArea/:id', soloAdmin, areaController.eliminarArea);
 
+
+// Rutas para propósitos
+router.get('/propositos', soloAdmin, propositoController.listarPropositosController);
+router.get('/propositos/:id', soloAdmin, propositoController.obtenerPropositoPorIdController);
+router.post('/propositos', soloAdmin, propositoController.nuevoPropositoController);
+router.put('/propositos/:id', soloAdmin, propositoController.actualizarPropositoController);
+router.delete('/propositos/:id', soloAdmin, propositoController.eliminarPropositoController);
+router.delete('/propositos/eliminar-item/:idProposito/:index', soloAdmin, propositoController.eliminarItemPropositoController);
 
 export {router};
