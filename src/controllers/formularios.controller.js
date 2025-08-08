@@ -87,8 +87,11 @@ export const deleteFormulario = async (req, res) => {
 export const planificacionAnual = async (req, res) => {
     const { datos } = req.body;
     const parsed = typeof datos === 'string' ? JSON.parse(datos) : datos;
-
+    const perspectivas =["1","dos","3","cuatro"];
+    const contenidos = ["contenido1","contenido2","contenido3"]
     res.render('formularios/formPlanificacionAnual', {
+        contenidos,
+        perspectivas,
         datos: parsed
     });
 };

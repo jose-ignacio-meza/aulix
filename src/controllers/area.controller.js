@@ -1,8 +1,7 @@
 import * as areaService from '../services/area.service.js';
 
-export const mostrarNuevaArea = (req, res) => {
-    
-    res.render('admin/crearArea');
+export const mostrarNuevaArea = (req, res) => { 
+    res.render('admin/crearArea',{ message: req.message || null });
 }
 
 export const nuevaArea = async (req, res) => {

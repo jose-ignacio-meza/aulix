@@ -5,6 +5,8 @@ import * as plantillaController from '../controllers/plantillasFormularios.contr
 import * as contenidoController from '../controllers/contenido.controller.js';
 import * as areaController from '../controllers/area.controller.js';
 import * as propositoController from '../controllers/proposito.controller.js';
+import * as modalidadesController from '../controllers/modalidades.controller.js'
+import * as perspectivasController from '../controllers/perspectivas.controller.js'
 
 const router = Router();
 
@@ -54,5 +56,11 @@ router.post('/propositos', soloAdmin, propositoController.nuevoPropositoControll
 router.post('/editarPropositos/:id', soloAdmin, propositoController.actualizarPropositoController);
 router.post('/eliminarPropositos/:id', soloAdmin, propositoController.eliminarPropositoController);
 router.delete('/propositos/eliminar-item/:idProposito/:index', soloAdmin, propositoController.eliminarItemPropositoController);
+
+//Rutas para ver modalidades
+router.get('/modalidades', soloAdmin, modalidadesController.allModalidades);
+
+//Rutas para ver modalidades
+router.get('/perspectivas', soloAdmin, perspectivasController.allPerspectivas);
 
 export {router};

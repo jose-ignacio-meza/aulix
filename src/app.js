@@ -66,8 +66,8 @@ app.use(flash());
 
 // Middleware para pasar los mensajes a las vistas
 app.use((req, res, next) => {
-    res.locals.success_msg = req.flash('success');
-    res.locals.error_msg = req.flash('error');
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
     next();
 });
 

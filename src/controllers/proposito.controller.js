@@ -104,7 +104,7 @@ export const actualizarPropositoController = async (req, res) => {
         const data = req.body;
         const propositoActualizado = await actualizarProposito(id, data);
         if (!propositoActualizado) {
-             req.flash('error', 'Propósito no encontrado');
+            req.flash('error', 'Propósito no encontrado');
             return listarPropositosController(req, res); // Redirigir a la vista de listado de propósitos
         }
         req.flash('success', 'Propósito actualizado exitosamente');

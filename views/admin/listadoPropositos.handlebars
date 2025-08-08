@@ -98,6 +98,20 @@
         {{> sidebar}}
         <div class="main-content"  style="justify-content: flex-start;">
             <div class="container">
+                {{!-- Mensajes flash con Bootstrap --}}
+                {{#if success}}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{success}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                {{/if}}
+
+                {{#if error}}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{error}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>
+                {{/if}}
                 <h1>{{title}}</h1>
                 <div class="filter-area">
                     <label for="areaFilter">Filtrar por área:</label>

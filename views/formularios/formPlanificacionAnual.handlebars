@@ -1,81 +1,104 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Formulario de Planificación Anual</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    form {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      background: #f8f9fa;
-    }
-    label {
-      font-weight: bold;
-      margin-top: 1rem;
-      display: block;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      border-radius: 6px;
-      border: 1px solid #aaa;
-    }
-    .btn {
-      margin-top: 1.5rem;
-      padding: 0.75rem 1.5rem;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background: #0056b3;
-    }
-  </style>
-</head>
-<body>
+<form method="POST" action="/formularios/enviar-planificacion-anual">
+  <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
 
-  <form method="POST" action="/formularios/enviar-planificacion-anual">
-    <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
+  <!-- Datos iniciales -->
+  <label for="nombre">Nombre</label>
+  <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
 
-    <label for="nombre">Nombre</label>
-    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
+  <label for="apellido">Apellido</label>
+  <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
 
-    <label for="apellido">Apellido</label>
-    <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
+  <label for="dni">DNI</label>
+  <input type="text" id="dni" name="dni" value="{{datos.usuario.datosPersonales.dni}}">
 
-    <label for="dni">DNI</label>
-    <input type="text" id="dni" name="dni" value="{{datos.usuario.datosPersonales.dni}}">
+  <label for="institucion">Institución</label>
+  <input type="text" id="institucion" name="institucion" value="{{datos.usuario.institucion}}">
 
-    <label for="institucion">Institución</label>
-    <input type="text" id="institucion" name="institucion" value="{{datos.usuario.institucion}}">
+  <label for="cursoGlobal">Curso/Área</label>
+  <input type="text" id="cursoGlobal" name="cursoGlobal" value="{{datos.usuario.curso}}">
 
-    <label for="curso">Curso</label>
-    <input type="text" id="curso" name="curso" value="{{datos.usuario.curso}}">
+  <label for="anio">Año Lectivo</label>
+  <input type="text" id="anio" name="anio" value="{{datos.respuestas.anio}}" placeholder="Ej: 2025">
 
-    <label for="anio">Año Lectivo</label>
-    <input type="text" id="anio" name="anio" value="{{datos.respuestas.anio}}" placeholder="Ej: 2025">
+  <!-- Cursos dinámicos -->
+  <div id="cursos-container"></div>
 
-    <label for="objetivos">Objetivos Generales</label>
-    <textarea id="objetivos" name="objetivos" rows="4" placeholder="Escriba los objetivos generales..."></textarea>
+  <button type="button" id="add-curso" class="btn" style="margin-top:1rem;">Agregar curso/sala</button>
+  <button type="submit" class="btn" style="margin-top:1rem;background:green;">Guardar y Continuar</button>
+</form>
 
-    <label for="contenidos">Contenidos</label>
-    <textarea id="contenidos" name="contenidos" rows="4" placeholder="Escriba los contenidos a desarrollar..."></textarea>
+<script>
+  const cursosContainer = document.getElementById('cursos-container');
+  const addCursoBtn = document.getElementById('add-curso');
 
-    <label for="metodologia">Metodología</label>
-    <textarea id="metodologia" name="metodologia" rows="4" placeholder="Explique la metodología de trabajo..."></textarea>
+  // Meses por trimestre
+  const mesesPorTrimestre = {
+    "1": ["Marzo", "Abril", "Mayo"],
+    "2": ["Junio", "Julio", "Agosto"],
+    "3": ["Septiembre", "Octubre", "Noviembre"]
+  };
 
-    <label for="evaluacion">Criterios de Evaluación</label>
-    <textarea id="evaluacion" name="evaluacion" rows="3" placeholder="Explique cómo se evaluará el trabajo..."></textarea>
+  let cursoIndex = 0;
 
-    <button type="submit" class="btn">Guardar y Continuar</button>
-  </form>
+  addCursoBtn.addEventListener('click', () => {
+    const index = cursoIndex++;
+    const cursoDiv = document.createElement('div');
+    cursoDiv.classList.add('curso-block');
+    cursoDiv.style.border = "1px solid #ccc";
+    cursoDiv.style.padding = "1rem";
+    cursoDiv.style.marginTop = "1rem";
+    cursoDiv.style.borderRadius = "8px";
 
-</body>
-</html>
+    cursoDiv.innerHTML = `
+      <h3>Curso/Sala ${index + 1}</h3>
+      <label>Trimestre</label>
+      <select name="cursos[${index}][trimestre]" class="trimestre-select" data-index="${index}">
+        <option value="">-- Seleccionar --</option>
+        <option value="1">1° Trimestre</option>
+        <option value="2">2° Trimestre</option>
+        <option value="3">3° Trimestre</option>
+      </select>
+      <div class="meses-container" id="meses-${index}"></div>
+    `;
+
+    cursosContainer.appendChild(cursoDiv);
+
+    const trimestreSelect = cursoDiv.querySelector('.trimestre-select');
+    trimestreSelect.addEventListener('change', (e) => {
+      const selectedTrim = e.target.value;
+      const mesesDiv = document.getElementById(`meses-${index}`);
+      mesesDiv.innerHTML = ""; // limpiar
+
+      if (mesesPorTrimestre[selectedTrim]) {
+        mesesPorTrimestre[selectedTrim].forEach((mes, mesIndex) => {
+          mesesDiv.innerHTML += `
+            <h4>${mes}</h4>
+            <input type="hidden" name="cursos[${index}][meses][${mesIndex}][mes]" value="${mes}">
+
+            <label>Contenidos</label>
+            <select name="cursos[${index}][meses][${mesIndex}][contenidos][]" multiple>
+              {{#each contenidos}}
+                <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+
+            <label>Perspectivas</label>
+            <select name="cursos[${index}][meses][${mesIndex}][perspectivas][]" multiple>
+              {{#each perspectivas}}
+                <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+
+            <label>Recursos</label>
+            <select name="cursos[${index}][meses][${mesIndex}][recursos][]" multiple>
+              {{#each recursos}}
+                <option value="{{this}}">{{this}}</option>
+              {{/each}}
+            </select>
+            <hr>
+          `;
+        });
+      }
+    });
+  });
+</script>

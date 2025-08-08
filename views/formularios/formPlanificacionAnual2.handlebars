@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulario de Planificación Anual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    form {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      background: #f8f9fa;
+    }
+    label {
+      font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+    }
+    .btn {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    .mes {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    .mes h3 {
+      margin-top: 0;
+    }
+    select {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="data-form" 
+    data-contenidos='{{{json contenidos}}}' 
+    data-perspectivas='{{{json perspectivas}}}'>
+  </div>
+
+  <form method="POST" action="/formularios/enviar-planificacion-anual">
+    <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
+
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
+
+    <label for="apellido">Apellido</label>
+    <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
+
+    <label for="dni">DNI</label>
+    <input type="text" id="dni" name="dni" value="{{datos.usuario.datosPersonales.dni}}">
+
+    <label for="institucion">Institución</label>
+    <input type="text" id="institucion" name="institucion" value="{{datos.usuario.institucion}}">
+
+    <label for="curso">Curso</label>
+    <input type="text" id="curso" name="curso" value="{{datos.usuario.curso}}">
+
+    <label for="anio">Año Lectivo</label>
+    <input type="text" id="anio" name="anio" value="{{datos.respuestas.anio}}" placeholder="Ej: 2025">
+
+    <label for="trimestre">Trimestre</label>
+    <select id="trimestre" name="trimestre">
+      <option value="1">1°er</option>
+      <option value="2">2°do</option>
+      <option value="3">3°er</option>
+    </select>
+
+    <div id="contenedor-meses">
+    <!-- acá irán los selects generados por JS -->
+    </div>
+
+
+
+    <button type="submit" class="btn">Guardar y Continuar</button>
+  </form>
+
+  <script>
+    const dataDiv = document.getElementById('data-form');
+    const contenidos   = JSON.parse(dataDiv.dataset.contenidos);
+    const perspectivas = JSON.parse(dataDiv.dataset.perspectivas);
+
+    const mesesPorTrimestre = {
+      1: ['enero', 'febrero', 'marzo'],
+      2: ['abril', 'mayo', 'junio'],
+      3: ['julio', 'agosto', 'septiembre']
+    };
+
+    const contenedorMeses = document.getElementById('contenedor-meses');
+    const selectTrimestre = document.getElementById('trimestre');
+
+    // Genera un bloque HTML (con selects múltiples) para cada mes
+    function crearBloqueMes(nombreMes) {
+      return `
+        <div class="mes">
+          <h4>${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)}</h4>
+
+          <label>Contenidos</label>
+          <select name="contenidos_${nombreMes}[]" multiple size="4">
+            ${contenidos.map(c => `<option value="${c}">${c}</option>`).join('')}
+          </select>
+
+          <label>Perspectivas</label>
+          <select name="perspectivas_${nombreMes}[]" multiple size="4">
+            ${perspectivas.map(p => `<option value="${p}">${p}</option>`).join('')}
+          </select>
+        </div>
+      `;
+    }
+
+    function actualizarMeses() {
+      const trimestreSeleccionado = selectTrimestre.value;
+      const meses = mesesPorTrimestre[trimestreSeleccionado];
+
+      contenedorMeses.innerHTML = ''; // limpiar
+
+      meses.forEach(mes => {
+        contenedorMeses.innerHTML += crearBloqueMes(mes);
+      });
+    }
+
+    selectTrimestre.addEventListener('change', actualizarMeses);
+    window.addEventListener('DOMContentLoaded', actualizarMeses);
+
+  </script>
+</body>
+</html>
