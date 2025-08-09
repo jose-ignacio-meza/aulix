@@ -8,6 +8,7 @@ export const crearContenido = async (data) => {
 export const eliminarUnItemContenido = async (contenido, index) => {
     return await eliminarItem(contenido, index);
 };
+
 export const actualizarContenido = async (id, data) => {
     return await editarContenido(id, data);
 };

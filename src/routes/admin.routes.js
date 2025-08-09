@@ -7,6 +7,7 @@ import * as areaController from '../controllers/area.controller.js';
 import * as propositoController from '../controllers/proposito.controller.js';
 import * as modalidadesController from '../controllers/modalidades.controller.js'
 import * as perspectivasController from '../controllers/perspectivas.controller.js'
+import * as criteriosController from '../controllers/criterios.controller.js'
 
 const router = Router();
 
@@ -56,6 +57,16 @@ router.post('/propositos', soloAdmin, propositoController.nuevoPropositoControll
 router.post('/editarPropositos/:id', soloAdmin, propositoController.actualizarPropositoController);
 router.post('/eliminarPropositos/:id', soloAdmin, propositoController.eliminarPropositoController);
 router.delete('/propositos/eliminar-item/:idProposito/:index', soloAdmin, propositoController.eliminarItemPropositoController);
+
+//Rutas para Criterios
+router.get('/criterios', soloAdmin, criteriosController.getAllCriterios);
+router.get('/crearCriterio', soloAdmin, criteriosController.mostrarNuevoCriterio);
+router.get('/editarCriterio/:id', soloAdmin, criteriosController.mostrarEditarCriterio);
+router.post('/criterios', soloAdmin, criteriosController.nuevoCriterio);
+router.post('/editarCriterio/:id', soloAdmin, criteriosController.editarCriterio);
+router.post('/eliminarCriterio/:id', soloAdmin, criteriosController.eliminarCriterio);
+router.delete('/criterio/eliminar-item/:idCriterio/:index', soloAdmin, criteriosController.eliminarItemCriterioController);
+
 
 //Rutas para ver modalidades
 router.get('/modalidades', soloAdmin, modalidadesController.allModalidades);
