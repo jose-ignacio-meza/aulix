@@ -14,7 +14,7 @@ export const crearUsuarioDAO = async (datos) => {
 
 export const buscarUsuarioPorEmail = async (email) => {
   try{
-    console.log("Buscando usuario con email:", email);
+    //console.log("Buscando usuario con email:", email);
     return await UsuarioModel.findOne({ email });
   } catch (error) {
     throw error;
@@ -35,10 +35,10 @@ export const eliminarUsuario = async (id) => {
   try {
     const resultado = await UsuarioModel.findByIdAndUpdate(id,{ eliminado: new Date() },{ new: true });
     if(!resultado){
-      console.log('no hay usuario con es id');
+      //console.log('no hay usuario con es id');
       return {errorMessage:"fallo la consulta y no se encontro el usuario"};
     }
-    console.log("usuario encontrado: ", resultado);
+    //console.log("usuario encontrado: ", resultado);
     return resultado 
   } catch (error) {
     console.error("Error eliminando usuario:", error);

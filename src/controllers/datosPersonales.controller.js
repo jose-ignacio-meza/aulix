@@ -12,7 +12,7 @@ export const mostrarFormularioDatos = async (req, res) => {
       const anio = fecha.getFullYear();
       usuarioPlain.datosPersonales.fechaNacimiento = `${anio}-${mes}-${dia}`;
     }
-    console.log('Usuario encontrado:', usuarioPlain);
+    //console.log('Usuario encontrado:', usuarioPlain);
     res.render('datos-personales', { usuario: usuarioPlain });
   } catch (error) {
     console.error('Error al obtener datos personales:', error);
@@ -43,7 +43,7 @@ export const guardarDatosPersonales = async (req, res) => {
 
     await usuario.save();
     const datosGuardados = await Usuario.findById(req.usuario._id);
-    console.log('Datos personales guardados:', datosGuardados.datosPersonales);
+    //console.log('Datos personales guardados:', datosGuardados.datosPersonales);
     res.redirect('/perfil'); // o donde lo necesites
   } catch (error) {
     console.error('Error al guardar datos personales:', error);

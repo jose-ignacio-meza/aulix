@@ -167,7 +167,7 @@
                 const index = this.getAttribute('data-index');
                 const confirmacion = confirm("¿Seguro que querés eliminar este ítem?");
                 if (confirmacion) {
-                    console.log( `Eliminando ítem en el índice:${index} del contenido con id ${contenidoId}`);
+                    //console.log( `Eliminando ítem en el índice:${index} del contenido con id ${contenidoId}`);
                     fetch(`/admin/contenidos/eliminar-item/${contenidoId}/${index}`, {
                         method: 'DELETE'
                     })

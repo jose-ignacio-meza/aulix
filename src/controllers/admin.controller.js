@@ -7,8 +7,8 @@ import mongoose from 'mongoose';
 const index = (req, res) => {
     // Renderizar la vista principal del panel de administración
     // Aquí podrías pasar datos adicionales si es necesario
-    console.log('Accediendo al panel de administración');
-    console.log('Usuario autenticado:', req.usuario.rol);
+    //console.log('Accediendo al panel de administración');
+    //console.log('Usuario autenticado:', req.usuario.rol);
     if (!req.usuario || req.usuario.rol !== 'admin') {
         return res.status(403).json({ message: 'Acceso denegado' });
     }
@@ -50,7 +50,7 @@ const crearUnUsuario = async (req, res) => {
             };
         const hashedPassword = await bcrypt.hash(password, 10);
         const datos ={email,password:hashedPassword,datosPersonales}
-        console.log("datos:", datos)
+        //console.log("datos:", datos)
         const nuevoUsuario = await crearUsuario(datos);
         res.status(201).render('/admin/listadoUsuarios',{message:"Usuario creado ", nuevoUsuario});
     } catch (error) {
@@ -62,12 +62,11 @@ const crearUnUsuario = async (req, res) => {
 const eliminarUsuario = async (req, res) => {
     try {
         const { id } = req.body;
-        console.log('llegue al controller con el id : ',id)
         const eliminado = await eliminarUnUsuario(id);
         if (!eliminado) {
             return res.status(404).json({ message: 'Usuario no encontrado' });
         }
-        console.log('Usuario Eliminado: ',eliminado);
+        //console.log('Usuario Eliminado: ',eliminado);
         res.redirect('/admin/usuarios');
     } catch (error) {
         res.status(500).json({ message: 'Error al eliminar usuario' });
@@ -141,7 +140,7 @@ const editarUsuario = async (req, res) => {
         cargo,
         titulo
         } = req.body;
-        console.log('fecha nacimiento : ',fechaNacimiento);
+
         // Validación de ID
         if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).send({ message: "ID de usuario no válido" });

@@ -13,13 +13,13 @@ import {
  */
 
 export const validarDatosPlantilla = (datos) => {
-    console.log('validarDatosPlantilla llamada');
+    //console.log('validarDatosPlantilla llamada');
     if (!datos.tipo || !datos.Preguntas) {
-        console.log('error 1')
+        //console.log('error 1')
         throw new Error('Los datos de la plantilla deben contener un tipo y preguntas.');
     }
     if (typeof datos.Preguntas !== 'object' || Array.isArray(datos.Preguntas)) {
-        console.log('error 2')
+        //console.log('error 2')
         throw new Error('Preguntas debe ser un objeto.');
     }
     for (const key in datos.Preguntas) {
@@ -31,7 +31,7 @@ export const validarDatosPlantilla = (datos) => {
             !pregunta.label ||
             !pregunta.placeholder
         ) {
-            console.log('error 3')
+            //console.log('error 3')
             throw new Error(`La pregunta con clave ${key} no tiene todos los campos requeridos.`);
         }
     }
@@ -39,9 +39,9 @@ export const validarDatosPlantilla = (datos) => {
 
 export const crearPlantilla = async (datos) => {
     try{
-        console.log('estoy aca ', datos);
+        //console.log('estoy aca ', datos);
         validarDatosPlantilla(datos);
-        console.log('paso la validacion')
+        //console.log('paso la validacion')
         return await crear(datos);
     }catch(error){
         return error

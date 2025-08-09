@@ -27,8 +27,7 @@ export const getAllUsuarios = async()=>{
 
 export const crearUsuario = async(datos) =>{
   try{
-    
-    console.log('nuevo usuario: ',datos);
+    //console.log('nuevo usuario: ',datos);
     const nuevoUsuario = await crearUsuarioDAO(datos);
     if(!nuevoUsuario){
       return {message:"no se pudo crear el usuario"}

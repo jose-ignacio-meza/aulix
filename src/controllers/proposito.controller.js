@@ -126,7 +126,7 @@ export const eliminarPropositoController = async (req, res) => {
         req.flash('success', { message: 'Propósito eliminado' });
         return listarPropositosController(req, res); // Redirigir a la vista de listado de propósitos
     } catch (error) {
-        console.error('Error al eliminar propósito:', error);
+        console.error('Error al eliminar propósito:',id,' error:', error);
         res.status(500).json({ message: 'Error al eliminar propósito' });
     }
 };

@@ -163,7 +163,7 @@
         }
 
         const criterioId = document.getElementById('itemsContainer').dataset.id;
-        console.log(`ID del criterio: ${criterioId}`);
+        //console.log(`ID del criterio: ${criterioId}`);
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', function () {
                 const container = document.getElementById('itemsContainer');
@@ -178,7 +178,7 @@
                 const confirmacion = confirm("¿Seguro que querés eliminar este ítem?");
                 if (!confirmacion) return;
 
-                console.log(`Eliminando ítem en el índice:${index} del criterio con id ${criterioId}`);
+                //console.log(`Eliminando ítem en el índice:${index} del criterio con id ${criterioId}`);
                 fetch(`/admin/criterio/eliminar-item/${criterioId}/${index}`, {
                     method: 'DELETE'
                 })

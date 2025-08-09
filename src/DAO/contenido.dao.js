@@ -25,12 +25,7 @@ export const deleteContenido = async (id) => {
 };
 
 export const listarContenido = async () => {
-    try {
-        return await contenido.find({ eliminado: false }).populate('area', 'nombre').lean();
-    } catch (error) {
-        console.error('Error al listar contenido:', error);
-        throw error;
-    }
+    return await contenido.find({ eliminado: false }).populate('area', 'nombre').lean();
 };
 
 export const obtenerContenidoPorIdDAO = async (id) => {

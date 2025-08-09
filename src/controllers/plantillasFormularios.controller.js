@@ -22,7 +22,7 @@ const guardarPlantilla = async (req, res) => {
 
         // Aquí podrías implementar la lógica para guardar la plantilla
         let plantillaGuardada = await plantillaService.crearPlantilla(plantilla);
-        console.log('despues de guardar', plantillaGuardada)
+        //console.log('despues de guardar', plantillaGuardada)
         if (!plantillaGuardada) {
             return res.status(400).json({ message: 'Error al guardar plantilla' });
         }
@@ -49,7 +49,7 @@ const obtenerPlantilla = async (req, res) => {
 const obtenerTodasLasPlantillas = async (req, res) => {
     try {
         const resultado = await plantillaService.obtenerTodasLasPlantillas();
-        console.log(resultado);
+        //console.log(resultado);
         res.render('admin/listadoPlantillas', {'plantillas':resultado.plantillas, 'plantillasEliminadas':resultado.plantillasEliminadas});
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener plantillas' });
@@ -88,7 +88,6 @@ const restaurarPlantilla = async(req,res) => {
     try {
         const { id } = req.params;
         const restaurado = await plantillaService.restaurarPlantilla(id);
-        console.log('paso');
         if (!restaurado) {
             return res.status(404).json({ message: 'Plantilla no encontrada' });
         }

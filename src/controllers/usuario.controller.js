@@ -10,7 +10,7 @@ export const altaInstitucion = async (req, res) => {
   try {
     const idUsuario = req.usuario._id;
     const { nombre, cursos } = req.body;
-    console.log('Nombre:'+nombre+' cursos:'+cursos);
+    //console.log('Nombre:'+nombre+' cursos:'+cursos);
     // Asegurate de que `cursos` venga como array de objetos { nombre, cargo }
     const nuevaInstitucion = {
       nombre,
@@ -36,7 +36,7 @@ export const getAllInstituciones = async (req,res) =>{
     try{
         const id = req.usuario._id;
         const instituciones = await getInstituciones(id);
-        console.log(instituciones);
+        //console.log(instituciones);
         // Filtrar activas y eliminadas
         const institucionesActivas = instituciones.instituciones.filter(inst => !inst.eliminado);
         const institucionesEliminadas = instituciones.instituciones.filter(inst => inst.eliminado);

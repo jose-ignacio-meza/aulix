@@ -66,7 +66,7 @@ export const procesarLogin = async (req, res) => {
 
 export const mostrarcambiarPassword = (req, res) => {
   if (!req.usuario) {
-    console.log('no enconte el usuario');
+    //console.log('no enconte el usuario');
     return res.redirect('/login');
   }
   res.render('cambiar-pw');

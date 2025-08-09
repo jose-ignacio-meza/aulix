@@ -7,7 +7,7 @@ export const login = async (email, contraseña) => {
   const usuario = await usuarioDAO.buscarUsuarioPorEmail(email);
   if (!usuario) throw new Error('Usuario no encontrado');
   
-  console.log('Hash almacenado:', usuario.password);
+  //console.log('Hash almacenado:', usuario.password);
   const esValido = await bcrypt.compare(contraseña, usuario.password);
   if (!esValido) throw new Error('Contraseña incorrecta');
 

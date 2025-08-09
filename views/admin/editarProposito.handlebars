@@ -167,7 +167,7 @@
         }
 
         const propositoId = document.getElementById('itemsContainer').dataset.id;
-        console.log(`ID del propósito: ${propositoId}`);
+        //.log(`ID del propósito: ${propositoId}`);
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             btn.addEventListener('click', function () {
                 const container = document.getElementById('itemsContainer');
@@ -182,7 +182,7 @@
                 const confirmacion = confirm("¿Seguro que querés eliminar este ítem?");
                 if (!confirmacion) return;
 
-                console.log(`Eliminando ítem en el índice:${index} del propósito con id ${propositoId}`);
+                //console.log(`Eliminando ítem en el índice:${index} del propósito con id ${propositoId}`);
                 fetch(`/admin/propositos/eliminar-item/${propositoId}/${index}`, {
                     method: 'DELETE'
                 })

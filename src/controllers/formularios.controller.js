@@ -13,31 +13,34 @@ export const getFormularios = async (req, res) => {
         }
         res.render('formularios/index', { "payload": formularios });
     } catch (error) {
+        console.error('Error al obtener los formularios, error: ',error);
         res.status(500).json({ error: error.message });
     }
 };
 
 export const getFormularioById = async (req, res) => {
     try {
-        console.log("Obteniendo formulario por ID:", req.params.id);
+        //console.log("Obteniendo formulario por ID:", req.params.id);
         const formulario = await formularioService.getById(req.params.id);
-        console.log("Formulario encontrado:", formulario);
+        //console.log("Formulario encontrado:", formulario);
         if (!formulario) {
             return res.status(404).json({ message: 'Formulario no encontrado' });
         }
         res.render('formularios/verFormulario', { "payload": formulario });
     } catch (error) {
+        console.error('Error al obtener el formulario con el id: ',req.params.id,' error:',error);
         res.status(500).json({ error: error.message });
     }
 };
 export const crernuevoFormularioByTipo = async (req, res) => {
     try {
         const tipoFormulario = req.query.tipo;
-        console.log("Creando nuevo formulario de tipo:", tipoFormulario);
+        //console.log("Creando nuevo formulario de tipo:", tipoFormulario);
         const formulario = await formularioService.getFormularioByTipo(tipoFormulario);
-        console.log("Formulario encontrado:", formulario);
+        //console.log("Formulario encontrado:", formulario);
         res.render('formularios/crearFormulario', { "formulario": formulario ,"tipo": tipoFormulario });
     } catch (error) {
+        console.error('Error al crear un nuevo formulario con el id: ',tipoFormulario,' error:',error);
         res.status(500).json({ error: error.message });
     }
 }
@@ -49,6 +52,7 @@ export const createFormulario = async (req, res) => {
         const nuevoFormulario = await formularioService.create(req.body);
         res.status(201).json(nuevoFormulario);
     } catch (error) {
+        console.error('Error al crear un formulario, error:',error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -65,6 +69,7 @@ export const updateFormulario = async (req, res) => {
         }
         res.json(formularioActualizado);
     } catch (error) {
+        console.error('Error al editar el formulario: ',req.params.id,', error:',error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -77,6 +82,7 @@ export const deleteFormulario = async (req, res) => {
         }
         res.json({ message: 'Formulario eliminado correctamente' });
     } catch (error) {
+        console.error('Error al aliminar el formulario: ',req.params.id,', error:',error);
         res.status(500).json({ error: error.message });
     }
 };

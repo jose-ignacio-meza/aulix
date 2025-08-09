@@ -6,12 +6,7 @@ export const nuevoProposito = async (data) => {
 };
 
 export const listarPropositosDAO = async () => {
-    try {
-        return await proposito.find({ eliminado: false }).populate('area', 'nombre').lean();
-    } catch (error) {
-        console.error('Error al listar propósitos:', error);
-        throw error;
-    }
+    return await proposito.find({ eliminado: false }).populate('area', 'nombre').lean();
 };
 
 export const obtenerPropositoPorIdDAO = async (id) => {
