@@ -7,7 +7,7 @@ const conn = connectDBFormularios(); // obtenés la conexión
 const criteriosSchema = new mongoose.Schema({
     titulo: {
         type: String,
-        required: true,
+        required: false,
         trim: true
     },
     items: [{
