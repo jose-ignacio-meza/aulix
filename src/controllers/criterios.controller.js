@@ -51,7 +51,7 @@ export const mostrarNuevoCriterio = async(req,res) => {
 
 export const nuevoCriterio = async(req,res) => {
     try{
-        const { area, items } = req.body;
+        const { area,titulo, items } = req.body;
 
         // Parsear el string a array
         const itemsArray = JSON.parse(items);
@@ -59,6 +59,7 @@ export const nuevoCriterio = async(req,res) => {
         // Armar el objeto para el service
         const data = { 
             area, 
+            titulo,
             items: itemsArray 
         };
 

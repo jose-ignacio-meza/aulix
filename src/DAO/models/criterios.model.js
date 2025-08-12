@@ -5,6 +5,11 @@ const conn = connectDBFormularios(); // obtenés la conexión
 
 // Definir el esquema para la colección "contenido"
 const criteriosSchema = new mongoose.Schema({
+    titulo: {
+        type: String,
+        required: true,
+        trim: true
+    },
     items: [{
         type: String,
         trim: true

@@ -1,4 +1,4 @@
-import contenido from '../DAO/models/cotenido.model.js';
+import contenido from '../DAO/models/contenido.model.js';
 
 export const nuevoContenido = async (data) => {
     const nuevoContenido = new contenido(data);

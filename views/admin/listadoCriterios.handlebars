@@ -110,8 +110,9 @@
                 </div>
                 <table id="tablaContenidos">
                     <thead>
-                        <tr>
+                        <tr>    
                             <th>Área</th>
+                            <th>Titulo</th>
                             <th>Criterios</th>
                             <th>Acciones</th>
                         </tr>
@@ -120,6 +121,7 @@
                         {{#each criterios}}
                         <tr data-area="{{this.area._id}}">
                             <td>{{this.area.nombre}}</td>
+                            <td>{{this.titulo}}</td>
                             <td>
                                 <ul>
                                     {{#each this.items}}

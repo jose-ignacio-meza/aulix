@@ -122,7 +122,9 @@
                         {{/each}}
                     </select>
 
-                    <h3>Criterios de Evaluacion</h3>
+                    <label for="titulo">Título del Criterio</label>
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ingrese el título del criterio de evaluacion" value="{{criterio.titulo}}">
+
                     <div id="itemsContainer" data-id="{{criterio._id}}">
                         {{#each criterio.items}}
                             <div class="item-row">
