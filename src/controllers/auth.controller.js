@@ -9,10 +9,12 @@ export const mostrarHomePage = async(req,res)=>{
   const instituciones = usuario.instituciones
   .filter(inst => !inst.eliminado)
   .map(inst => ({
+    _id: inst._id,
     nombre: inst.nombre,
     cursos: inst.cursos
       .filter(curso => !curso.eliminado)
       .map(curso => ({
+        _id: curso._id,
         nombre: curso.nombre,
         cargo: curso.cargo
       }))

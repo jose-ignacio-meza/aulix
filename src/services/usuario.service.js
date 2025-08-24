@@ -75,10 +75,11 @@ export const darAltaInstitucion = async (idUsuario, institucion) => {
     throw new Error('El nombre de la institución y al menos un curso son requeridos');
   }
 
-  // Verificar que cada curso tenga nombre y cargo
+  // Verificar que cada curso tenga nombre y área
   for (const curso of cursos) {
-    if (!curso.nombre || !curso.cargo) {
-      throw new Error('Cada curso debe tener nombre y cargo');
+    if (!curso.nombre || !curso.area) {
+      console.log('entro al error con curso', curso);
+      throw new Error('Cada curso debe tener nombre y área');
     }
   }
 
@@ -110,8 +111,8 @@ export const editarInstitucionService = async (idUsuario, idInstitucion, institu
   }
 
   for (const curso of cursos) {
-    if (!curso.nombre || !curso.cargo) {
-      throw new Error('Cada curso debe tener nombre y cargo');
+    if (!curso.nombre || !curso.area) {
+      throw new Error('Cada curso debe tener nombre y área');
     }
   }
 

@@ -14,8 +14,13 @@
           <div class="curso-input" data-index="0">
             <label>Nombre del curso:</label>
             <input type="text" name="cursos[0][nombre]" required placeholder="Ej: 1° A">
-            <label>Cargo:</label>
-            <input type="text" name="cursos[0][cargo]" required placeholder="Ej: Profesor">
+            <label>Área:</label>
+            <select name="cursos[0][area]" required>
+              <option value="0" name="0" id="0" selected disabled>Seleccione una opcion</option>
+              {{#each areas}}
+                <option value="{{this._id}}">{{this.nombre}}</option>
+              {{/each}}
+            </select>
           </div>
         </div>
 
@@ -39,8 +44,8 @@
       div.innerHTML = `
         <label>Nombre del curso:</label>
         <input type="text" name="cursos[${cursoIndex}][nombre]" required placeholder="Ej: 2° B">
-        <label>Cargo:</label>
-        <input type="text" name="cursos[${cursoIndex}][cargo]" required placeholder="Ej: Preceptor">
+        <label>Área:</label>
+        <input type="text" name="cursos[${cursoIndex}][area]" required placeholder="Ej: Preceptor">
         <button type="button" class="eliminar-curso" style="margin-left: 10px; color: red;">Eliminar</button>
       `;
 
@@ -57,3 +62,4 @@
     });
   </script>
 </body>
+</html>

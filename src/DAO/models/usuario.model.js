@@ -19,9 +19,10 @@ const datosPersonalesSchema = new mongoose.Schema({
 }, { _id: false }); // para no generar un _id interno para este objeto embebido
 
 // CursoSchema con cargo específico
+// Referencia al modelo Area usando ObjectId
 const cursoSchema = new mongoose.Schema({
   nombre: String,
-  cargo: String,
+  area: mongoose.Schema.Types.ObjectId, // Relación con el modelo Area
   eliminado: { type: Boolean, default: false }
 }, { _id: true });
 

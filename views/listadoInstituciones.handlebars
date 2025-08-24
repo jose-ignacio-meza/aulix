@@ -53,16 +53,27 @@
           <li class="list-group-item">
           <div class="institucion-info">{{this.nombre}}</div>
 
-          {{#if this.cursos.length}}
+            {{#if this.cursos.length}}
             <div class="cursos">
               <strong>Cursos:</strong>
-              <ul>
+              <table class="table table-bordered table-sm mt-2">
+              <thead>
+                <tr>
+                <th>Nombre</th>
+                <th>Área</th>
+                </tr>
+              </thead>
+              <tbody>
                 {{#each this.cursos}}
-                  <li>{{this.nombre}} – Cargo: {{this.cargo}}</li>
+                <tr>
+                  <td>{{this.nombre}}</td>
+                  <td>{{this.area.nombre}}</td>
+                </tr>
                 {{/each}}
-              </ul>
+              </tbody>
+              </table>
             </div>
-          {{/if}}
+            {{/if}}
 
           <div class="institucion-actions">
             <form action="/usuario/eliminarInstitucion" method="POST">

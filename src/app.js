@@ -48,7 +48,14 @@ app.engine('handlebars', exphbs.create({
       if (typeof str !== 'string' || !str.length) return '';
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
-    or: (a, b) => a || b
+    or: (a, b) => a || b,
+    // 🔹 Helper para comparar y usar selected
+    ifCond: function(v1, v2, options) {
+      if (v1?.toString() === v2?.toString()) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    }
   }
 }).engine);
 

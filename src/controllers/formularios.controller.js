@@ -1,4 +1,9 @@
 import FormularioService from '../services/formularios.service.js';
+import * as perspectivasService from '../services/perspectivas.service.js';
+import * as contenidosService from '../services/contenido.service.js';
+import * as criteriosService from '../services/criterios.service.js';
+import * as modalidadesService from '../services/modalidades.service.js';
+import * as areasService from '../services/area.service.js';
 
 const formularioService = new FormularioService();
 
@@ -91,13 +96,49 @@ export const deleteFormulario = async (req, res) => {
 //Distintos Formularios
 
 export const planificacionAnual = async (req, res) => {
-    const { datos } = req.body;
-    const parsed = typeof datos === 'string' ? JSON.parse(datos) : datos;
-    const perspectivas =["1","dos","3","cuatro"];
-    const contenidos = ["contenido1","contenido2","contenido3"]
+    let { datos } = req.body;
+
+    // Parsear si viene como string
+    if (typeof datos === 'string') {
+        datos = JSON.parse(datos);
+    }
+    console.log(datos)
+    const instituciones = req.usuario.instituciones;
+    const institucionesParsed = await Promise.all(
+        req.usuario.instituciones.map(async i => ({
+            ...i,
+            _id: i._id.toString(),
+            cursos: await Promise.all(i.cursos.map(async c => ({
+                ...c,
+                area: await areasService.obtenerAreaPorId(c.area), // Simula populate manualmente
+                _id: c._id.toString()
+            })))
+        }))
+    );
+
+    institucionesParsed.forEach(inst => {
+        // Mostrar cursos de forma legible
+        console.log('Institución:', inst.nombre || inst._id);
+        console.log('Cursos:', JSON.stringify(inst.cursos, null, 2));
+    });
+    const perspectivas = await perspectivasService.getAllPerspectivas();
+    const contenidos = await contenidosService.obtenerContenido();
+    const criterios = await criteriosService.getAllCriteriosService();
+    const modalidades= await modalidadesService.allModalidades();
+    // Si modalidades es un string, lo parsea a objeto; si ya es objeto, lo deja igual
+    let modalidadesParsed;
+    if (typeof modalidades === 'string') {
+        modalidadesParsed = JSON.parse(modalidades);
+    } else {
+        modalidadesParsed = modalidades;
+    }
     res.render('formularios/formPlanificacionAnual', {
+        instituciones: institucionesParsed,
         contenidos,
+        modalidades: modalidadesParsed,
         perspectivas,
-        datos: parsed
+        criterios,
+        datos,
+        datosDebug: JSON.stringify({contenidos, perspectivas, criterios,modalidadesParsed}, null, 2)
     });
 };

@@ -4,7 +4,6 @@
     {{> sidebar}}
     <div class="main-content">
       <h2>Editar Institución</h2>
-
       <form action="/usuario/editarInstitucion" method="POST">
         <input type="hidden" name="idInstitucion" value="{{institucion._id}}">
 
@@ -17,8 +16,16 @@
             <div class="curso-input" data-index="{{@index}}">
               <label>Nombre del curso:</label>
               <input type="text" name="cursos[{{@index}}][nombre]" value="{{this.nombre}}" required>
-              <label>Cargo:</label>
-              <input type="text" name="cursos[{{@index}}][cargo]" value="{{this.cargo}}" required>
+              <label>Area:</label>
+              <label>Area:</label>
+              <select name="cursos[{{@index}}][area]" class="form-select">
+                <option value="">-- Seleccioná un área --</option>
+                {{#each ../areas}} <!-- ../../ porque estás dentro de institucion.cursos -->
+                  <option value="{{this._id}}" {{#ifCond this._id ../this.area}}selected{{/ifCond}}>
+                    {{this.nombre}}
+                  </option>
+                {{/each}}
+              </select>
               <button type="button" class="eliminar-curso" style="margin-left: 10px; color: red;">Eliminar</button>
             </div>
           {{/each}}

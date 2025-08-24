@@ -116,7 +116,7 @@
 
             <script>
                 const instituciones = {{{json instituciones}}};
-                
+
                 //console.log("Instituciones cargadas:", instituciones); // para verificar
                 const respuestas = {};
                 let pasoActual = 0;
@@ -127,56 +127,62 @@
                         pregunta: "¿Qué desea hacer hoy?",
                         tipo: "select",
                         opciones: [
-                        {
-                            valor: "Planificación",
-                            subpregunta: {
-                            id: "tipoPlanificacion",
-                            pregunta: "¿Qué tipo de planificación?",
-                            tipo: "select",
-                            opciones: ["Anual", "Mensual"]
+                            {
+                                valor: "Planificación",
+                                subpregunta: {
+                                    id: "tipoPlanificacion",
+                                    pregunta: "¿Qué tipo de planificación?",
+                                    tipo: "select",
+                                    opciones: ["Anual", "Mensual"]
+                                }
+                            },
+                            {
+                                valor: "Proyecto Informe",
+                                subpregunta: {
+                                    id: "tipoProyecto",
+                                    pregunta: "¿Qué tipo de proyecto?",
+                                    tipo: "select",
+                                    opciones: ["Individual", "Grupal"]
+                                }
+                            },
+                            {
+                                valor: "DDJJ"
+                            },
+                            {
+                                valor: "Acta",
+                                subpregunta: {
+                                    id: "tipoActa",
+                                    pregunta: "¿Qué tipo de acta?",
+                                    tipo: "select",
+                                    opciones: ["Comportamiento", "Recepción de familia", "Clase abierta"]
+                                }
                             }
-                        },
-                        {
-                            valor: "Proyecto Informe",
-                            subpregunta: {
-                            id: "tipoProyecto",
-                            pregunta: "¿Qué tipo de proyecto?",
-                            tipo: "select",
-                            opciones: ["Individual", "Grupal"]
-                            }
-                        },
-                        {
-                            valor: "DDJJ"
-                        },
-                        {
-                            valor: "Acta",
-                            subpregunta: {
-                            id: "tipoActa",
-                            pregunta: "¿Qué tipo de acta?",
-                            tipo: "select",
-                            opciones: ["Comportamiento", "Recepción de familia", "Clase abierta"]
-                            }
-                        }
                         ]
                     },
                     {
                         id: "institucion",
                         pregunta: "¿En qué institución trabaja?",
                         tipo: "botones-con-nueva",
-                        opciones: [...instituciones.map(i => i.nombre), "+ Nueva institución"]
+                        opciones: [
+                        ...instituciones.map(i => ({
+                                                valor: i._id,   // lo que querés enviar
+                                                texto: i.nombre // lo que querés mostrar
+                                            })),
+                        { valor: "_nueva", texto: "+ Nueva institución" }
+                        ]
                     },
                     {
                         id: "anio",
                         pregunta: "¿Para qué año?",
                         tipo: "select",
                         opciones: ["2023", "2024", "2025"]
-                    },
+                    }/*,
                     {
                         id: "nivel",
                         pregunta: "¿Para qué nivel?",
                         tipo: "select",
                         opciones: ["Inicial", "Primario", "Secundario"]
-                    },
+                    }*/,
                     {
                         id: "curso",
                         pregunta: "¿Qué curso tiene a cargo?",
@@ -256,8 +262,12 @@
 
                     if (paso.tipo === "select" || paso.tipo === "select-input" || paso.tipo === "botones-con-nueva") {
                         const opciones = paso.opciones.map(opt => {
-                            const valor = typeof opt === "string" ? opt : opt.valor;
-                            return `<button class="btn btn-opcion" data-valor="${valor}" style="margin: 0.5rem;">${valor}</button>`;
+                        if (typeof opt === "string") {
+                            return `<button class="btn btn-opcion" data-valor="${opt}" style="margin: 0.5rem;">${opt}</button>`;
+                        } else {
+                            const texto = opt.texto || opt.valor; // si no hay texto, usar valor
+                            return `<button class="btn btn-opcion" data-valor="${opt.valor}" style="margin: 0.5rem;">${texto}</button>`;
+                        }
                         }).join('');
 
                         html += opciones;
@@ -281,7 +291,7 @@
                             const valor = btn.getAttribute('data-valor');
                             
                             if (paso.id === "institucion") {
-                                if (valor === "+ Nueva institución") {
+                                if (valor === "_nueva") {
                                     // Mostrar input para nueva institución
                                     contenedor.innerHTML += `
                                         <input type="text" id="nuevaInstitucionInput" class="form-control" placeholder="Ingrese nueva institución" style="margin-top: 0.5rem;">
@@ -311,8 +321,16 @@
                                     });
                                     return; // No avanzar hasta que confirme
                                 } else {
-                                    respuestas[paso.id] = valor;
-                                    pasoActual++;
+                                    respuestas[paso.id] = valor; // ahora guardás el id directamente
+                                    const instSeleccionada = instituciones.find(i => i._id === valor);
+                                    console.log("Institución seleccionada:", instSeleccionada);
+                                    const cursosDisponibles = instSeleccionada ? instSeleccionada.cursos.map(c => ({
+                                        valor: c._id,
+                                        texto: c.nombre
+                                    })) : [];
+
+                                    const cursoPaso = pasos.find(p => p.id === "curso");
+                                    if (cursoPaso) cursoPaso.opciones = cursosDisponibles;
                                     renderPaso();
                                 }
                             }
@@ -344,9 +362,14 @@
                                 }
 
                                 if (paso.id === "institucion") {
-                                    const instSeleccionada = instituciones.find(i => i.nombre === valor);
-                                    const cursosDisponibles = instSeleccionada ? instSeleccionada.cursos.map(c => c.nombre) : [];
-
+                                    const instSeleccionada = instituciones.find(i => i._id === valor);
+                                    const cursosDisponibles = instSeleccionada
+                                        ? instSeleccionada.cursos.map(c => ({
+                                            valor: c._id,   // lo que se va a guardar al seleccionar
+                                            texto: c.nombre // lo que se muestra en los botones
+                                        }))
+                                        : [];
+                                    console.log("Cursos disponibles:", cursosDisponibles);
                                     const cursoPaso = pasos.find(p => p.id === "curso");
                                     if (cursoPaso) cursoPaso.opciones = cursosDisponibles;
                                 }

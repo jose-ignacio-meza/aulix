@@ -1,9 +1,11 @@
 import {darAltaInstitucion, getInstituciones, eliminarInstitucionService, restaurarInstitucionService, editarInstitucionService } from '../services/usuario.service.js'
 import Usuario from '../DAO/models/usuario.model.js';
+import {obtenerAreas} from '../services/area.service.js';
 
 
-export const mostrarAltaInstitucion = (req,res) =>{
-    res.status(200).render('./altaInstitucion');
+export const mostrarAltaInstitucion = async (req,res) =>{
+    const areas = await obtenerAreas();
+    res.status(200).render('./altaInstitucion', { areas });
 }
 
 export const altaInstitucion = async (req, res) => {
@@ -16,7 +18,7 @@ export const altaInstitucion = async (req, res) => {
       nombre,
       cursos: cursos.map(curso => ({
         nombre: curso.nombre,
-        cargo: curso.cargo,
+        area: curso.area,
         eliminado: false
       })),
       eliminado: false
@@ -84,10 +86,14 @@ export const vistaEditarInstitucionController = async (req, res) => {
   const institucion = usuario.instituciones.find(i => i._id.toString() === idInstitucion);
 
   if (!institucion) return res.status(404).send('Institución no encontrada');
+  const areas = await obtenerAreas();
 
+  console.log('Áreas que llegan a la vista:', areas);
+  console.log('Tipo de areas:', Array.isArray(areas));
   res.render('editarInstitucion', {
     institucion,
-    idInstitucion: institucion._id
+    idInstitucion: institucion._id,
+    areas
   });
 };
 
@@ -104,16 +110,16 @@ export const editarInstitucionController = async (req, res) => {
       // Múltiples cursos: cursos es un array de objetos
       cursosFinales = cursos.map(c => ({
         nombre: c.nombre,
-        cargo: c.cargo
+        area: c.area
       }));
     } else if (cursos && typeof cursos === 'object') {
       // Solo un curso enviado
-      cursosFinales = [{ nombre: cursos.nombre, cargo: cursos.cargo }];
+      cursosFinales = [{ nombre: cursos.nombre, area: cursos.area }];
     }
 
     // Validación adicional opcional
-    if (!nombre || cursosFinales.some(c => !c.nombre || !c.cargo)) {
-      throw new Error('Todos los cursos deben tener nombre y cargo');
+    if (!nombre || cursosFinales.some(c => !c.nombre || !c.area)) {
+      throw new Error('Todos los cursos deben tener nombre y área');
     }
 
     await editarInstitucionService(idUsuario, idInstitucion, {
