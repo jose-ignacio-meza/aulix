@@ -1,0 +1,512 @@
+<!-- Estilo -->
+<style>
+  /* Contenedor general del formulario */
+  form {
+    max-width: 1800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    background: #fdfdfd;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  form h2 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+
+  label {
+    font-weight: bold;
+    margin-top: 0.8rem;
+    display: block;
+    color: #555;
+  }
+
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Efectos de focus */
+  input:focus,
+  select:focus {
+    border-color: #009aae;
+    box-shadow: 0 0 4px rgba(0,154,174,0.4);
+    outline: none;
+  }
+
+  /* Validaciones visuales */
+  .is-valid {
+    border-color: #28a745 !important;
+    background-color: #eaffea;
+  }
+  .is-invalid {
+    border-color: #dc3545 !important;
+    background-color: #ffeaea;
+  }
+
+  /* Bloques de cursos */
+  .curso-block {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .curso-block h3 {
+    margin-top: 0;
+    color: #444;
+  }
+  .curso-block h4 {
+    margin-bottom: 0.3rem;
+    margin-top: 1rem;
+    font-size: 15px;
+    color: #555;
+  }
+
+  /* Botones */
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: #009aae;
+    color: #fff;
+    font-size: 14px;
+    transition: background 0.3s ease;
+  }
+  .btn:hover {
+    background: #007d89;
+  }
+
+  /* Botón verde específico */
+  .btn.save {
+    background: green;
+  }
+  .btn.save:hover {
+    background: darkgreen;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3; /* borde gris */
+    border-top: 5px solid #009aae; /* borde superior color */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+<!-- Fin Estilos -->
+
+<!-- Formulario -->
+  <form method="POST" action="/formularios/enviar-planificacion-anual">
+    <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
+
+    <!-- Datos iniciales -->
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
+
+    <label for="apellido">Apellido</label>
+    <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
+
+    <label for="dni">DNI</label>
+    <input type="text" id="dni" name="dni" value="{{datos.usuario.datosPersonales.dni}}">
+
+    <label for="anio">Año Lectivo</label>
+    <input type="text" id="anio" name="anio" value="{{datos.respuestas.anio}}" placeholder="Ej: 2025">
+    
+    <label for="modalidad">Modalidad</label>
+    <select id="modalidad" name="modalidad">
+      <option value="0" selected disabled>Seleccione una Modalidad</option>
+      {{#each modalidades}}
+          <option value="{{this._id}}">{{this.descripcion}}</option>
+      {{/each}}
+    </select>
+
+    <label for="institucion">Institución</label>
+    <select id="institucion" name="institucion">
+      <option value="">Seleccione institución</option>
+      {{#each instituciones}}
+        {{#if (eq this._id ../datos.usuario.institucion)}}
+          <option value="{{_id}}" selected>{{nombre}}</option>
+        {{else}}
+          <option value="{{_id}}">{{nombre}}</option>
+        {{/if}}
+      {{/each}}
+    </select>
+
+    <!-- Cursos dinámicos -->
+    <div id="cursos-container"></div>
+
+    <button type="button" id="add-curso" class="btn" style="margin-top:1rem;">Agregar curso/sala</button>
+    <button type="submit" class="btn" style="margin-top:1rem;background:green;">Guardar y Continuar</button>
+  </form>
+
+<!-- Fin Formulario -->
+
+<!-- Loader con spinner -->
+<div id="loader" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+">
+  <div class="spinner"></div>
+  <div style="margin-top: 10px; font-size: 1.2rem; color: #009aae;">
+    Cargando contenidos...
+  </div>
+</div>
+<!-- Fin Loader con spinner -->
+
+<!--<pre>{{datosDebug}}</pre> datos puros para analizar estructura-->
+
+<script>
+  function mostrarLoader() {
+    document.getElementById("loader").style.display = "flex";
+  }
+
+  function ocultarLoader() {
+    document.getElementById("loader").style.display = "none";
+  }
+  // Meses por trimestre
+  const mesesPorTrimestre = {
+    "1": ["Marzo", "Abril", "Mayo"],
+    "2": ["Junio", "Julio", "Agosto"],
+    "3": ["Septiembre", "Octubre", "Noviembre"]
+  };
+
+  let cursoIndex = 0;
+
+  // Datos del backend
+  const contenidos = {{{json contenidos}}};
+  const perspectivas = {{{json perspectivas}}};
+  const criterios = {{{json criterios}}};
+  const datosInstituciones = {{{json instituciones}}};
+
+  // 🔹 Al cargar la página, agregar curso preseleccionado si existe
+  document.addEventListener('DOMContentLoaded', () => {
+    const institucionId = "{{datos.usuario.institucion}}";
+    const cursoId = "{{datos.usuario.curso}}" || null;
+
+    if (institucionId && cursoId) {
+      const institucion = datosInstituciones.find(i => i._id.toString() === institucionId);
+      if (institucion) {
+        const curso = institucion.cursos.find(c => c._id.toString() === cursoId);
+        if (curso) {
+          console.log('objeto curso antes de agregar curso pre seteado',curso);
+          agregarCurso(cursoIndex++, curso._id, curso.nombre, institucionId);
+        }
+      }
+    }
+    ocultarLoader();
+  });
+
+  const cursosContainer = document.getElementById('cursos-container');
+  const addCursoBtn = document.getElementById('add-curso');
+
+  // Institución Seleccionada
+  const selectInstitucion = document.getElementById('institucion');
+  let institucionActual = selectInstitucion.value; // valor de la opción seleccionada
+  console.log("Institución actual:", institucionActual);
+  
+  let cursosDisponiblesPorInstitucion = {}; // { idInstitucion: [ {id, nombre}, ... ] }
+
+  // Inicializar al cargar la página
+  datosInstituciones.forEach(inst => {
+    cursosDisponiblesPorInstitucion[inst._id] = inst.cursos.map(c => ({
+      id: c._id,
+      area: c.area._id,
+      nombre: c.nombre,
+      seleccionado: false
+    }));
+  });
+
+  console.log("Cursos disponibles por institución:", cursosDisponiblesPorInstitucion);
+
+  //Cambio de institucion
+  selectInstitucion.addEventListener('change', () => {
+    institucionActual = selectInstitucion.value;
+    console.log("Nueva institución seleccionada:", institucionActual);
+    
+    // Eliminar todos los elementos hijos del contenedor de cursos
+    while (cursosContainer.firstChild) {
+      cursosContainer.removeChild(cursosContainer.firstChild);
+    }
+    // Reiniciar el índice de cursos
+    cursoIndex = 0;
+    
+    // Cargar cursos disponibles
+    let cursosDisponibles = cursosDisponiblesPorInstitucion[institucionActual] || [];
+
+    // Reiniciar 'seleccionado' a false para todos los cursos
+    cursosDisponiblesPorInstitucion[institucionActual] = cursosDisponibles.map(c => ({
+      ...c,
+      seleccionado: false
+    }));
+
+    console.log("Cursos disponibles en el change para la nueva institución:", cursosDisponibles);
+
+
+    // Recorrer selects ya existentes
+    const selectsCursos = document.querySelectorAll('.curso-select');
+    selectsCursos.forEach(select => {
+      const valorSeleccionado = select.value;
+      const existe = cursosDisponibles.some(c => c.id === valorSeleccionado);
+      if (existe) {
+        // Eliminar el curso del arreglo de cursos disponibles si existe
+        cursosDisponibles = cursosDisponibles.filter(c => c.id !== valorSeleccionado);
+        //select.value = ""; // resetear si ya no es válido
+      }else{
+        select.value = ""; // resetear si ya no es válido
+      }
+    });
+  });
+
+  function actualizarOpcionesCursos(idInstitucion) {
+    const selects = document.querySelectorAll('.curso-select');
+    console.log(selects);
+    selects.forEach(select => {
+      console.log(select);
+      const valorActual = select.value;
+
+      select.innerHTML = '<option value="">-- Seleccionar --</option>';
+
+      let cursos = cursosDisponiblesPorInstitucion[idInstitucion]
+        .filter(c => !c.seleccionado || c.id === valorActual); // <- importante: permitir valorActual aunque esté en true
+
+      cursos.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c.id;
+        option.textContent = c.nombre;
+        if (c.id === valorActual) option.selected = true;
+        select.appendChild(option);
+      });
+    });
+  }
+
+  // Función para agregar un bloque de curso dinámico
+  function agregarCurso(index, idCurso = null, nombreCurso = "", idInstitucion = null) {
+    const cursoDiv = document.createElement('div');
+    
+    cursoDiv.classList.add('curso-block');
+    cursoDiv.style.border = "1px solid #ccc";
+    cursoDiv.style.padding = "1rem";
+    cursoDiv.style.marginTop = "1rem";
+    cursoDiv.style.borderRadius = "8px";
+
+    if (!idInstitucion) return;
+
+    // Marcar el curso como seleccionado en la lista global
+    cursosDisponiblesPorInstitucion[idInstitucion] = cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
+      if (c.nombre === nombreCurso) {
+        return { ...c, seleccionado: true }; // marcar como seleccionado
+      }
+      return c;
+    });
+
+    // Obtener la lista global de cursos disponibles para esta institución
+    let cursosDisponibles = cursosDisponiblesPorInstitucion[idInstitucion].filter(c => !c.seleccionado);
+
+    const optionsHTML = cursosDisponibles.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+
+    cursoDiv.innerHTML = `
+      <label>Curso/Área</label>
+      <select name="cursos[${index}][nombre]" class="curso-select">
+        ${nombreCurso ? `<option value="${idCurso}" selected>${nombreCurso}</option>` : '<option value="">-- Seleccionar --</option>'}
+        ${optionsHTML}
+      </select>
+
+      <label>Trimestre</label>
+      <select name="cursos[${index}][trimestre]" class="trimestre-select" data-index="${index}">
+        <option value="">-- Seleccionar --</option>
+        <option value="1">1° Trimestre</option>
+        <option value="2">2° Trimestre</option>
+        <option value="3">3° Trimestre</option>
+      </select>
+      <div class="meses-container" id="meses-${index}"></div>
+    `;
+
+    cursosContainer.appendChild(cursoDiv);
+
+    // Seleccionamos el select recién creado
+    const cursoSelect = cursoDiv.querySelector('.curso-select');
+
+    // Listener para actualizar la propiedad 'seleccionado'
+    let valorAnterior = idCurso; // si ya viene seleccionado
+    cursoSelect.addEventListener('change', (e) => {
+      const nuevoValor = e.target.value;
+
+      // Desmarcar el curso anterior (si existía)
+      if (valorAnterior) {
+        cursosDisponiblesPorInstitucion[idInstitucion] =
+          cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
+            if (c.id === valorAnterior) return { ...c, seleccionado: false };
+            return c;
+          });
+      }
+
+      // Marcar el nuevo como seleccionado
+      if (nuevoValor) {
+        cursosDisponiblesPorInstitucion[idInstitucion] =
+          cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
+            if (c.id === nuevoValor) return { ...c, seleccionado: true };
+            return c;
+          });
+      }
+
+      valorAnterior = nuevoValor;
+
+      // Re-renderizar selects
+      actualizarOpcionesCursos(idInstitucion);
+    });
+
+    const trimestreSelect = cursoDiv.querySelector('.trimestre-select');
+
+    trimestreSelect.addEventListener('change', async (e) => {
+      const selectedTrim = e.target.value;
+      if (!selectedTrim) return;
+      const mesesDiv = document.getElementById(`meses-${index}`);
+      mesesDiv.innerHTML = ""; // limpiar
+
+      if (!mesesPorTrimestre[selectedTrim]) return;
+
+      mostrarLoader();
+
+      try {
+        let htmlCompleto = "";
+
+        for (let mesIndex = 0; mesIndex < mesesPorTrimestre[selectedTrim].length; mesIndex++) {
+          const mes = mesesPorTrimestre[selectedTrim][mesIndex];
+          console.log('curso seleccionado',cursoSelect.value);
+          console.log('aca busco',datosInstituciones);
+          // 1. Buscar la institución que tenga el curso con ese id
+          const institucionMatch = datosInstituciones.find(inst => 
+            inst.cursos.some(curso => curso._id === cursoSelect.value)
+          );
+
+          // 2. Dentro de esa institución, buscar el curso específico
+          const cursoMatch = institucionMatch?.cursos.find(curso => curso._id === cursoSelect.value);
+
+          // 3. Sacar el id del área
+          const idAreaCursoSelected = cursoMatch?.area?._id;console.log('area de instituciones:', idAreaCursoSelected);
+          console.log('id del area:', idAreaCursoSelected);
+          htmlCompleto += `<b><h4>${mes}</h4></b>
+            <input type="hidden" name="cursos[${index}][meses][${mesIndex}][mes]" value="${mes}">
+            <span>Seleccione un contenido</span>`;
+
+          // ✅ Nuevo bloque: agrupa contenidos por área y arma tabs
+          // Agrupar contenidos por área
+          const contenidosPorArea = {};
+          contenidos.forEach(c => {
+            const areaId = c.area._id;
+            if (!contenidosPorArea[areaId]) {
+              contenidosPorArea[areaId] = { nombre: c.area.nombre, contenidos: [] };
+            }
+            contenidosPorArea[areaId].contenidos.push(c);
+          });
+
+          // Generar tabs (Bootstrap)
+          htmlCompleto += `
+            <ul class="nav nav-tabs" id="tabs-area-${index}-${mesIndex}" role="tablist">
+              ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link ${areaId === idAreaCursoSelected ? "active" : ""}"
+                          id="tab-${index}-${mesIndex}-${areaId}"
+                          data-bs-toggle="tab"
+                          data-bs-target="#contenido-${index}-${mesIndex}-${areaId}"
+                          type="button" role="tab">
+                    ${area.nombre}
+                  </button>
+                </li>
+              `).join("")}
+            </ul>
+          `;
+
+          // Generar contenido de cada tab
+          htmlCompleto += `
+            <div class="tab-content" id="tabs-content-${index}-${mesIndex}">
+              ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
+                <div class="tab-pane fade ${areaId === idAreaCursoSelected ? "show active" : ""}"
+                    id="contenido-${index}-${mesIndex}-${areaId}"
+                    role="tabpanel">
+
+                  ${area.contenidos.map((cont, contIndex) => `
+                    <details class="contenido-block">
+                      <summary><strong>${cont.titulo}</strong></summary>
+                      <div class="items-list" style="margin-top:0.5rem;">
+                        ${cont.items.map((item, itemIndex) => `
+                          <div class="d-flex align-items-center">
+                            <input style="margin-right:6px; height: fit-content;" type="checkbox"
+                              name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][items][]"
+                              value="${item}"
+                              id="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
+                            <label class="my-1"
+                              for="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
+                              ${item}
+                            </label>
+                          </div>
+                        `).join('')}
+                        <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][_id]" value="${cont._id}">
+                        <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][titulo]" value="${cont.titulo}">
+                      </div>
+                    </details>
+                  `).join("")}
+
+                </div>
+              `).join("")}
+            </div>
+          `;
+
+          // Perspectivas
+          htmlCompleto += `<label>Perspectivas</label>
+            <select name="cursos[${index}][meses][${mesIndex}][perspectivas][]" multiple>
+              ${perspectivas.map(p => `<option value="${p._id}">${p.descripcion}</option>`).join('')}
+            </select>`;
+
+          // Criterios
+          htmlCompleto += `<label>Criterios</label>
+            <select name="cursos[${index}][meses][${mesIndex}][criterios][]" multiple>
+              ${criterios.map(c => `<option value="${c._id}">${c.area.nombre}</option>`).join('')}
+            </select>`;
+
+          htmlCompleto += `<hr>`;
+        }
+        htmlCompleto += `<button id="agregarCursoPlanificacion" class="btn btn-primary">Agregar Curso a la Planificacion</button>`;
+        mesesDiv.innerHTML = htmlCompleto;
+
+      } catch (error) {
+        console.error("Error generando contenidos:", error);
+      } finally {
+        ocultarLoader();
+      }
+    });
+    
+    return cursoDiv;
+  }
+  
+  // Botón para agregar curso manualmente
+  addCursoBtn.addEventListener('click', () => {
+    const index = cursoIndex++;
+    agregarCurso(index, null, "", institucionActual);
+  });
+</script>

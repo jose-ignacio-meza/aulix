@@ -117,8 +117,11 @@
     <h2 style="text-align:center;">Formulario: Planificación Anual</h2>
 
     <!-- Datos iniciales -->
+    <label for="titulo">Titulo</label>
+    <input type="text" id="titulo" name="titulo" value="Planificacion Anual" readonly onPaste="false">
+
     <label for="nombre">Nombre</label>
-    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}}">
+    <input type="text" id="nombre" name="nombre" value="{{datos.usuario.datosPersonales.nombre}} ">
 
     <label for="apellido">Apellido</label>
     <input type="text" id="apellido" name="apellido" value="{{datos.usuario.datosPersonales.apellido}}">
@@ -129,6 +132,7 @@
     <label for="anio">Año Lectivo</label>
     <input type="text" id="anio" name="anio" value="{{datos.respuestas.anio}}" placeholder="Ej: 2025">
     
+
     <label for="modalidad">Modalidad</label>
     <select id="modalidad" name="modalidad">
       <option value="0" selected disabled>Seleccione una Modalidad</option>
@@ -152,7 +156,6 @@
     <!-- Cursos dinámicos -->
     <div id="cursos-container"></div>
 
-    <button type="button" id="add-curso" class="btn" style="margin-top:1rem;">Agregar curso/sala</button>
     <button type="submit" class="btn" style="margin-top:1rem;background:green;">Guardar y Continuar</button>
   </form>
 
@@ -181,6 +184,7 @@
 <!--<pre>{{datosDebug}}</pre> datos puros para analizar estructura-->
 
 <script>
+  //-------Funciones del loader------------------
   function mostrarLoader() {
     document.getElementById("loader").style.display = "flex";
   }
@@ -188,12 +192,11 @@
   function ocultarLoader() {
     document.getElementById("loader").style.display = "none";
   }
-  // Meses por trimestre
-  const mesesPorTrimestre = {
-    "1": ["Marzo", "Abril", "Mayo"],
-    "2": ["Junio", "Julio", "Agosto"],
-    "3": ["Septiembre", "Octubre", "Noviembre"]
-  };
+  //-------Fin funciones del loader-------------
+
+
+  // Meses por año
+  const mesesAño = ["Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre"];
 
   let cursoIndex = 0;
 
@@ -213,7 +216,6 @@
       if (institucion) {
         const curso = institucion.cursos.find(c => c._id.toString() === cursoId);
         if (curso) {
-          console.log('objeto curso antes de agregar curso pre seteado',curso);
           agregarCurso(cursoIndex++, curso._id, curso.nombre, institucionId);
         }
       }
@@ -222,7 +224,6 @@
   });
 
   const cursosContainer = document.getElementById('cursos-container');
-  const addCursoBtn = document.getElementById('add-curso');
 
   // Institución Seleccionada
   const selectInstitucion = document.getElementById('institucion');
@@ -241,7 +242,7 @@
     }));
   });
 
-  console.log("Cursos disponibles por institución:", cursosDisponiblesPorInstitucion);
+  //console.log("Cursos disponibles por institución:", cursosDisponiblesPorInstitucion);
 
   //Cambio de institucion
   selectInstitucion.addEventListener('change', () => {
@@ -252,60 +253,19 @@
     while (cursosContainer.firstChild) {
       cursosContainer.removeChild(cursosContainer.firstChild);
     }
+
     // Reiniciar el índice de cursos
     cursoIndex = 0;
     
     // Cargar cursos disponibles
     let cursosDisponibles = cursosDisponiblesPorInstitucion[institucionActual] || [];
-
-    // Reiniciar 'seleccionado' a false para todos los cursos
-    cursosDisponiblesPorInstitucion[institucionActual] = cursosDisponibles.map(c => ({
-      ...c,
-      seleccionado: false
-    }));
-
-    console.log("Cursos disponibles en el change para la nueva institución:", cursosDisponibles);
-
-
-    // Recorrer selects ya existentes
-    const selectsCursos = document.querySelectorAll('.curso-select');
-    selectsCursos.forEach(select => {
-      const valorSeleccionado = select.value;
-      const existe = cursosDisponibles.some(c => c.id === valorSeleccionado);
-      if (existe) {
-        // Eliminar el curso del arreglo de cursos disponibles si existe
-        cursosDisponibles = cursosDisponibles.filter(c => c.id !== valorSeleccionado);
-        //select.value = ""; // resetear si ya no es válido
-      }else{
-        select.value = ""; // resetear si ya no es válido
-      }
-    });
+    agregarCurso(cursoIndex,null,null,institucionActual);
   });
 
-  function actualizarOpcionesCursos(idInstitucion) {
-    const selects = document.querySelectorAll('.curso-select');
-    console.log(selects);
-    selects.forEach(select => {
-      console.log(select);
-      const valorActual = select.value;
-
-      select.innerHTML = '<option value="">-- Seleccionar --</option>';
-
-      let cursos = cursosDisponiblesPorInstitucion[idInstitucion]
-        .filter(c => !c.seleccionado || c.id === valorActual); // <- importante: permitir valorActual aunque esté en true
-
-      cursos.forEach(c => {
-        const option = document.createElement('option');
-        option.value = c.id;
-        option.textContent = c.nombre;
-        if (c.id === valorActual) option.selected = true;
-        select.appendChild(option);
-      });
-    });
-  }
+ 
 
   // Función para agregar un bloque de curso dinámico
-  function agregarCurso(index, idCurso = null, nombreCurso = "", idInstitucion = null) {
+  function agregarCurso(index='', idCurso = null, nombreCurso = "", idInstitucion = null) {
     const cursoDiv = document.createElement('div');
     
     cursoDiv.classList.add('curso-block');
@@ -336,177 +296,192 @@
         ${optionsHTML}
       </select>
 
-      <label>Trimestre</label>
-      <select name="cursos[${index}][trimestre]" class="trimestre-select" data-index="${index}">
-        <option value="">-- Seleccionar --</option>
-        <option value="1">1° Trimestre</option>
-        <option value="2">2° Trimestre</option>
-        <option value="3">3° Trimestre</option>
-      </select>
+      <input type="hidden" value="1" name="cursos[${index}][trimestre]" class="trimestre-select" data-index="${index}">
       <div class="meses-container" id="meses-${index}"></div>
     `;
 
     cursosContainer.appendChild(cursoDiv);
 
-    // Seleccionamos el select recién creado
+    // Seleccionamos el curso si ya lo trae
     const cursoSelect = cursoDiv.querySelector('.curso-select');
 
-    // Listener para actualizar la propiedad 'seleccionado'
-    let valorAnterior = idCurso; // si ya viene seleccionado
-    cursoSelect.addEventListener('change', (e) => {
-      const nuevoValor = e.target.value;
+    const mesesDiv = document.getElementById(`meses-${index}`);
+    mesesDiv.innerHTML = ""; // limpiar
 
-      // Desmarcar el curso anterior (si existía)
-      if (valorAnterior) {
-        cursosDisponiblesPorInstitucion[idInstitucion] =
-          cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
-            if (c.id === valorAnterior) return { ...c, seleccionado: false };
-            return c;
-          });
-      }
+    mostrarLoader();
 
-      // Marcar el nuevo como seleccionado
-      if (nuevoValor) {
-        cursosDisponiblesPorInstitucion[idInstitucion] =
-          cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
-            if (c.id === nuevoValor) return { ...c, seleccionado: true };
-            return c;
-          });
-      }
+    try {
+      //Inicio el html que se va a insertar.
+      let htmlCompleto = "";
+      
+      // 1️⃣ Botones toggle de componentes
+      let botonesComponentesHTML = `
+        <div class="btn-group mb-3" role="group">
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="modalidad" data-activo="false">Modalidad</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="titulo" data-activo="false">Título</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="contenido" data-activo="false">Contenido</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="perspectivas" data-activo="false">Perspectivas</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="observaciones" data-activo="false">Observaciones</button>
+        </div>
+        <div class="componentes-container" id="meses-${index}"></div>
+      `;
 
-      valorAnterior = nuevoValor;
+      cursoDiv.innerHTML = botonesComponentesHTML;
 
-      // Re-renderizar selects
-      actualizarOpcionesCursos(idInstitucion);
-    });
-
-    const trimestreSelect = cursoDiv.querySelector('.trimestre-select');
-
-    trimestreSelect.addEventListener('change', async (e) => {
-      const selectedTrim = e.target.value;
-      if (!selectedTrim) return;
-      const mesesDiv = document.getElementById(`meses-${index}`);
+      // 2️⃣ Inicializar bloques de meses ocultos
+      const mesesDiv = cursoDiv.querySelector(`#meses-${index}`);
       mesesDiv.innerHTML = ""; // limpiar
 
-      if (!mesesPorTrimestre[selectedTrim]) return;
+      for (let mesIndex = 0; mesIndex < mesesAño.length; mesIndex++) {
+        const mes = mesesAño[mesIndex];
+        //console.log('curso seleccionado',cursoSelect.value);
+        //console.log('aca busco',datosInstituciones);
+        
+        // 1. Buscar la institución que tenga el curso con ese id
+        const institucionMatch = datosInstituciones.find(inst => 
+          inst.cursos.some(curso => curso._id === cursoSelect.value)
+        );
 
-      mostrarLoader();
+        // 2. Dentro de esa institución, buscar el curso específico
+        const cursoMatch = institucionMatch?.cursos.find(curso => curso._id === cursoSelect.value);
 
-      try {
-        let htmlCompleto = "";
+        // 3. Sacar el id del área
+        const idAreaCursoSelected = cursoMatch?.area?._id;
+        //console.log('area de instituciones:', idAreaCursoSelected);
+        //console.log('id del area:', idAreaCursoSelected);
+  
+        htmlCompleto += `<b><h3>${mes}</h3></b>
+          <input type="hidden" name="cursos[${index}][meses][${mesIndex}][mes]" value="${mes}">`;
 
-        for (let mesIndex = 0; mesIndex < mesesPorTrimestre[selectedTrim].length; mesIndex++) {
-          const mes = mesesPorTrimestre[selectedTrim][mesIndex];
-          console.log('curso seleccionado',cursoSelect.value);
-          console.log('aca busco',datosInstituciones);
-          // 1. Buscar la institución que tenga el curso con ese id
-          const institucionMatch = datosInstituciones.find(inst => 
-            inst.cursos.some(curso => curso._id === cursoSelect.value)
-          );
+        // ✅ Nuevo bloque: agrupa contenidos por área y arma tabs
+        
+        // Agrupar contenidos por área
+        const contenidosPorArea = {};
+        contenidos.forEach(c => {
+          const areaId = c.area._id;
+          if (!contenidosPorArea[areaId]) {
+            contenidosPorArea[areaId] = { nombre: c.area.nombre, contenidos: [] };
+          }
+          contenidosPorArea[areaId].contenidos.push(c);
+        });
 
-          // 2. Dentro de esa institución, buscar el curso específico
-          const cursoMatch = institucionMatch?.cursos.find(curso => curso._id === cursoSelect.value);
+        // Generar tabs (Bootstrap)
+        htmlCompleto += `
+          <div class="componente" data-componente="contenido" style="display:none">
+          <span>Seleccione un contenido</span>
+          <ul class="nav nav-tabs" id="tabs-area-${index}-${mesIndex}" role="tablist">
+            ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
+              <li class="nav-item" role="presentation">
+                <button class="nav-link ${areaId === idAreaCursoSelected ? "active" : ""}"
+                        id="tab-${index}-${mesIndex}-${areaId}"
+                        data-bs-toggle="tab"
+                        data-bs-target="#contenido-${index}-${mesIndex}-${areaId}"
+                        type="button" role="tab">
+                  ${area.nombre}
+                </button>
+              </li>
+            `).join("")}
+          </ul>
+        `;
 
-          // 3. Sacar el id del área
-          const idAreaCursoSelected = cursoMatch?.area?._id;console.log('area de instituciones:', idAreaCursoSelected);
-          console.log('id del area:', idAreaCursoSelected);
-          htmlCompleto += `<b><h4>${mes}</h4></b>
-            <input type="hidden" name="cursos[${index}][meses][${mesIndex}][mes]" value="${mes}">
-            <span>Seleccione un contenido</span>`;
+        // Generar contenido de cada tab
+        htmlCompleto += `
+          <div class="tab-content" id="tabs-content-${index}-${mesIndex}">
+            ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
+              <div class="tab-pane fade ${areaId === idAreaCursoSelected ? "show active" : ""}"
+                  id="contenido-${index}-${mesIndex}-${areaId}"
+                  role="tabpanel">
 
-          // ✅ Nuevo bloque: agrupa contenidos por área y arma tabs
-          // Agrupar contenidos por área
-          const contenidosPorArea = {};
-          contenidos.forEach(c => {
-            const areaId = c.area._id;
-            if (!contenidosPorArea[areaId]) {
-              contenidosPorArea[areaId] = { nombre: c.area.nombre, contenidos: [] };
-            }
-            contenidosPorArea[areaId].contenidos.push(c);
-          });
+                ${area.contenidos.map((cont, contIndex) => `
+                  <details class="contenido-block">
+                    <summary><strong>${cont.titulo}</strong></summary>
+                    <div class="items-list" style="margin-top:0.5rem;">
+                      ${cont.items.map((item, itemIndex) => `
+                        <div class="d-flex align-items-center">
+                          <input style="margin-right:6px; height: fit-content;" type="checkbox"
+                            name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][items][]"
+                            value="${item}"
+                            id="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
+                          <label class="my-1"
+                            for="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
+                            ${item}
+                          </label>
+                        </div>
+                      `).join('')}
+                      <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][_id]" value="${cont._id}">
+                      <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][titulo]" value="${cont.titulo}">
+                    </div>
+                  </details>
+                `).join("")}
+              </div>
+            `).join("")}
+          </div>
+        </div><!--Cierre del div de data-componente="contenido"-->`;
 
-          // Generar tabs (Bootstrap)
-          htmlCompleto += `
-            <ul class="nav nav-tabs" id="tabs-area-${index}-${mesIndex}" role="tablist">
-              ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link ${areaId === idAreaCursoSelected ? "active" : ""}"
-                          id="tab-${index}-${mesIndex}-${areaId}"
-                          data-bs-toggle="tab"
-                          data-bs-target="#contenido-${index}-${mesIndex}-${areaId}"
-                          type="button" role="tab">
-                    ${area.nombre}
-                  </button>
-                </li>
-              `).join("")}
-            </ul>
-          `;
+        // Perspectivas
+        htmlCompleto += `
+          <div class="componente" data-componente="perspectivas" style="display:none">
+          <label>Perspectivas</label>
+          <select name="cursos[${index}][meses][${mesIndex}][perspectivas][]" multiple>
+            ${perspectivas.map(p => `<option value="${p._id}">${p.descripcion}</option>`).join('')}
+          </select>
+          </div>`;
 
-          // Generar contenido de cada tab
-          htmlCompleto += `
-            <div class="tab-content" id="tabs-content-${index}-${mesIndex}">
-              ${Object.entries(contenidosPorArea).map(([areaId, area]) => `
-                <div class="tab-pane fade ${areaId === idAreaCursoSelected ? "show active" : ""}"
-                    id="contenido-${index}-${mesIndex}-${areaId}"
-                    role="tabpanel">
+        // Criterios
+        htmlCompleto += `
+          <div class="componente" data-componente="criterios" style="display:none"> 
+          <label>Criterios</label>
+          <select name="cursos[${index}][meses][${mesIndex}][criterios][]" multiple>
+            ${criterios.map(c => `<option value="${c._id}">${c.area.nombre}</option>`).join('')}
+          </select>
+          </div>`;
 
-                  ${area.contenidos.map((cont, contIndex) => `
-                    <details class="contenido-block">
-                      <summary><strong>${cont.titulo}</strong></summary>
-                      <div class="items-list" style="margin-top:0.5rem;">
-                        ${cont.items.map((item, itemIndex) => `
-                          <div class="d-flex align-items-center">
-                            <input style="margin-right:6px; height: fit-content;" type="checkbox"
-                              name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][items][]"
-                              value="${item}"
-                              id="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
-                            <label class="my-1"
-                              for="curso-${index}-mes-${mesIndex}-cont-${contIndex}-item-${itemIndex}">
-                              ${item}
-                            </label>
-                          </div>
-                        `).join('')}
-                        <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][_id]" value="${cont._id}">
-                        <input type="hidden" name="cursos[${index}][meses][${mesIndex}][contenidos][${contIndex}][titulo]" value="${cont.titulo}">
-                      </div>
-                    </details>
-                  `).join("")}
+        // Observaciones
+        htmlCompleto += `
+          <div class="componente" data-componente="observaciones" style="display:none">
+            <label>Observaciones</label>
+            <textarea name="cursos[${index}][meses][${mesIndex}][observaciones]" rows="3" style="width:100%;"></textarea>
+          </div>
+        `;
 
-                </div>
-              `).join("")}
-            </div>
-          `;
-
-          // Perspectivas
-          htmlCompleto += `<label>Perspectivas</label>
-            <select name="cursos[${index}][meses][${mesIndex}][perspectivas][]" multiple>
-              ${perspectivas.map(p => `<option value="${p._id}">${p.descripcion}</option>`).join('')}
-            </select>`;
-
-          // Criterios
-          htmlCompleto += `<label>Criterios</label>
-            <select name="cursos[${index}][meses][${mesIndex}][criterios][]" multiple>
-              ${criterios.map(c => `<option value="${c._id}">${c.area.nombre}</option>`).join('')}
-            </select>`;
-
-          htmlCompleto += `<hr>`;
-        }
-        htmlCompleto += `<button id="agregarCursoPlanificacion" class="btn btn-primary">Agregar Curso a la Planificacion</button>`;
-        mesesDiv.innerHTML = htmlCompleto;
-
-      } catch (error) {
-        console.error("Error generando contenidos:", error);
-      } finally {
-        ocultarLoader();
+        htmlCompleto += `<hr>`;
       }
+      
+      // Inicializar visibilidad según los checkboxes
+      cursoDiv.querySelectorAll(".comp-toggle").forEach(chk => chk.dispatchEvent(new Event("change")));
+
+      htmlCompleto += `<button id="agregarCursoPlanificacion" class="btn btn-primary">Agregar Curso a la Planificacion</button>`;
+      mesesDiv.innerHTML = htmlCompleto;
+
+    } catch (error) {
+      console.error("Error generando contenidos:", error);
+    } finally {
+      ocultarLoader();
+    }
+
+    // --------------------------
+    // 3️⃣ Listener de botones toggle
+    cursoDiv.querySelectorAll(".comp-toggle").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const boton = e.currentTarget;
+        const id = boton.dataset.componente;
+        const activo = boton.dataset.activo === "true";
+
+        // Alternar estado
+        boton.dataset.activo = !activo;
+        boton.classList.toggle("btn-primary", !activo);
+        boton.classList.toggle("btn-outline-primary", activo);
+
+        // Mostrar u ocultar todos los bloques de ese tipo
+        cursoDiv.querySelectorAll(`.componente[data-componente="${id}"]`).forEach(div => {
+          div.style.display = !activo ? "" : "none";
+        });
+      });
     });
-    
-    return cursoDiv;
+
+    // Inicializar visibilidad según los checkboxes
+    cursoDiv.querySelectorAll(".comp-toggle").forEach(chk => chk.dispatchEvent(new Event("change")));
+
   }
   
-  // Botón para agregar curso manualmente
-  addCursoBtn.addEventListener('click', () => {
-    const index = cursoIndex++;
-    agregarCurso(index, null, "", institucionActual);
-  });
 </script>
