@@ -242,26 +242,57 @@
     }));
   });
 
-  //console.log("Cursos disponibles por institución:", cursosDisponiblesPorInstitucion);
+  /**
+   * Crear y manejar el select de cursos según la institución seleccionada
+   */
+  const selectCursoLabel = document.createElement('label');
+  selectCursoLabel.innerText = 'Curso';
+  selectCursoLabel.htmlFor = 'curso';
 
-  //Cambio de institucion
-  selectInstitucion.addEventListener('change', () => {
-    institucionActual = selectInstitucion.value;
-    console.log("Nueva institución seleccionada:", institucionActual);
-    
-    // Eliminar todos los elementos hijos del contenedor de cursos
-    while (cursosContainer.firstChild) {
-      cursosContainer.removeChild(cursosContainer.firstChild);
+  const selectCurso = document.createElement('select');
+  selectCurso.id = 'curso';
+  selectCurso.name = 'curso';
+  selectCurso.innerHTML = '<option value="">Seleccione un curso</option>';
+  selectCurso.style.marginTop = '1rem';
+
+  // Insertar el label y el select de cursos debajo del select de instituciones
+  selectInstitucion.parentNode.insertBefore(selectCursoLabel, selectInstitucion.nextSibling);
+  selectInstitucion.parentNode.insertBefore(selectCurso, selectCursoLabel.nextSibling);
+
+  // Función para poblar cursos según la institución seleccionada
+  function poblarCursosPorInstitucion(idInstitucion, cursoSeleccionado = "") {
+    selectCurso.innerHTML = '<option value="">Seleccione un curso</option>';
+    if (idInstitucion && cursosDisponiblesPorInstitucion[idInstitucion]) {
+      cursosDisponiblesPorInstitucion[idInstitucion].forEach(curso => {
+        const selected = cursoSeleccionado && curso.id === cursoSeleccionado ? 'selected' : '';
+        selectCurso.innerHTML += `<option value="${curso.id}" ${selected}>${curso.nombre}</option>`;
+      });
     }
+  }
 
-    // Reiniciar el índice de cursos
-    cursoIndex = 0;
-    
-    // Cargar cursos disponibles
-    let cursosDisponibles = cursosDisponiblesPorInstitucion[institucionActual] || [];
-    agregarCurso(cursoIndex,null,null,institucionActual);
+  // Al cambiar la institución, actualizar cursos
+  selectInstitucion.addEventListener('change', function () {
+    const idInstitucion = this.value;
+    poblarCursosPorInstitucion(idInstitucion);
+    // Limpiar cursos dinámicos si cambia la institución
+    cursosContainer.innerHTML = '';
   });
 
+  // Si ya hay una institución seleccionada al cargar, poblar cursos
+  if (selectInstitucion.value) {
+    poblarCursosPorInstitucion(selectInstitucion.value, "{{datos.usuario.curso}}");
+  }
+
+  // Al seleccionar un curso, agregar el bloque dinámico
+  selectCurso.addEventListener('change', function () {
+    cursosContainer.innerHTML = '';
+    if (this.value && selectInstitucion.value) {
+      const cursoObj = cursosDisponiblesPorInstitucion[selectInstitucion.value].find(c => c.id === this.value);
+      if (cursoObj) {
+        agregarCurso(cursoIndex++, cursoObj.id, cursoObj.nombre, selectInstitucion.value);
+      }
+    }
+  });
  
 
   // Función para agregar un bloque de curso dinámico
@@ -276,19 +307,8 @@
 
     if (!idInstitucion) return;
 
-    // Marcar el curso como seleccionado en la lista global
-    cursosDisponiblesPorInstitucion[idInstitucion] = cursosDisponiblesPorInstitucion[idInstitucion].map(c => {
-      if (c.nombre === nombreCurso) {
-        return { ...c, seleccionado: true }; // marcar como seleccionado
-      }
-      return c;
-    });
-
-    // Obtener la lista global de cursos disponibles para esta institución
-    let cursosDisponibles = cursosDisponiblesPorInstitucion[idInstitucion].filter(c => !c.seleccionado);
-
-    const optionsHTML = cursosDisponibles.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-
+    const optionsHTML = cursosDisponiblesPorInstitucion[idInstitucion].map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+    console.log("optionsHTML:", optionsHTML);
     cursoDiv.innerHTML = `
       <label>Curso/Área</label>
       <select name="cursos[${index}][nombre]" class="curso-select">
@@ -299,7 +319,7 @@
       <input type="hidden" value="1" name="cursos[${index}][trimestre]" class="trimestre-select" data-index="${index}">
       <div class="meses-container" id="meses-${index}"></div>
     `;
-
+    console.log("cursoDiv:", cursoDiv);
     cursosContainer.appendChild(cursoDiv);
 
     // Seleccionamos el curso si ya lo trae
@@ -317,8 +337,8 @@
       // 1️⃣ Botones toggle de componentes
       let botonesComponentesHTML = `
         <div class="btn-group mb-3" role="group">
-          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="modalidad" data-activo="false">Modalidad</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="titulo" data-activo="false">Título</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="modalidad" data-activo="false">Modalidad</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="contenido" data-activo="false">Contenido</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="perspectivas" data-activo="false">Perspectivas</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="observaciones" data-activo="false">Observaciones</button>
@@ -353,6 +373,14 @@
         htmlCompleto += `<b><h3>${mes}</h3></b>
           <input type="hidden" name="cursos[${index}][meses][${mesIndex}][mes]" value="${mes}">`;
 
+        // Título
+        htmlCompleto += `
+          <div class="componente" data-componente="titulo" style="display:none">
+            <label>Título</label>
+            <input type="text" name="cursos[${index}][meses][${mesIndex}][titulo]" style="width:100%;">
+          </div>
+        `;
+        
         // ✅ Nuevo bloque: agrupa contenidos por área y arma tabs
         
         // Agrupar contenidos por área
@@ -450,7 +478,6 @@
       // Inicializar visibilidad según los checkboxes
       cursoDiv.querySelectorAll(".comp-toggle").forEach(chk => chk.dispatchEvent(new Event("change")));
 
-      htmlCompleto += `<button id="agregarCursoPlanificacion" class="btn btn-primary">Agregar Curso a la Planificacion</button>`;
       mesesDiv.innerHTML = htmlCompleto;
 
     } catch (error) {
