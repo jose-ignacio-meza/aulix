@@ -203,6 +203,7 @@
   // Datos del backend
   const contenidos = {{{json contenidos}}};
   const perspectivas = {{{json perspectivas}}};
+  const propositos = {{{json propositos}}};
   const criterios = {{{json criterios}}};
   const datosInstituciones = {{{json instituciones}}};
 
@@ -341,7 +342,9 @@
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="modalidad" data-activo="false">Modalidad</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="contenido" data-activo="false">Contenido</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="perspectivas" data-activo="false">Perspectivas</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="propositos" data-activo="false">Propositos</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="observaciones" data-activo="false">Observaciones</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="criterios" data-activo="false">Criterios</button>
         </div>
         <div class="componentes-container" id="meses-${index}"></div>
       `;
@@ -472,6 +475,14 @@
           </div>
         `;
 
+       // Propostitos
+        htmlCompleto += `
+          <div class="componente" data-componente="propositos" style="display:none"> 
+          <label>Propositos</label>
+          <select name="cursos[${index}][meses][${mesIndex}][propositos][]" multiple>
+            ${propositos.map(p => `<option value="${p._id}">${p.descripcion}</option>`).join('')}
+          </select>
+          </div>`;
         htmlCompleto += `<hr>`;
       }
       

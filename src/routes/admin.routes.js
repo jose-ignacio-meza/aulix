@@ -5,9 +5,10 @@ import * as plantillaController from '../controllers/plantillasFormularios.contr
 import * as contenidoController from '../controllers/contenido.controller.js';
 import * as areaController from '../controllers/area.controller.js';
 import * as propositoController from '../controllers/proposito.controller.js';
-import * as modalidadesController from '../controllers/modalidades.controller.js'
-import * as perspectivasController from '../controllers/perspectivas.controller.js'
-import * as criteriosController from '../controllers/criterios.controller.js'
+import * as modalidadesController from '../controllers/modalidades.controller.js';
+import * as perspectivasController from '../controllers/perspectivas.controller.js';
+import * as criteriosController from '../controllers/criterios.controller.js';
+import * as actividadesController from '../controllers/actividades.controller.js';
 
 const router = Router();
 
@@ -66,6 +67,15 @@ router.post('/criterios', soloAdmin, criteriosController.nuevoCriterio);
 router.post('/editarCriterio/:id', soloAdmin, criteriosController.editarCriterio);
 router.post('/eliminarCriterio/:id', soloAdmin, criteriosController.eliminarCriterio);
 router.delete('/criterio/eliminar-item/:idCriterio/:index', soloAdmin, criteriosController.eliminarItemCriterioController);
+
+//Rutas para Actividades
+router.get('/actividades', soloAdmin, actividadesController.listarActividades);
+router.get('/crearActividades', soloAdmin, actividadesController.mostrarCrearActividad);
+router.get('/actividades/:id/editar', soloAdmin, actividadesController.mostrarEditarActividad);
+router.post('/actividades', soloAdmin, actividadesController.crearActividadController);
+router.post('/editarActividades/:id', soloAdmin, actividadesController.editarActividadController);
+router.post('/eliminarActividades/:id', soloAdmin, actividadesController.eliminarActividadController);
+
 
 
 //Rutas para ver modalidades

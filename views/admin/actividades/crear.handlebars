@@ -1,0 +1,70 @@
+<head>
+    <style>
+
+    </style>
+</head>
+{{!-- Formulario para crear una nueva Actividad --}}
+{{> navbar}}
+<body>
+  <div class="container-app">
+    {{> sidebar}}
+    <div class="main-content" style="justify-content: flex-start;">
+      <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h1 class="h4">Crear Actividad</h1>
+          <a href="/admin/actividades" class="btn btn-secondary">Volver al listado</a>
+        </div>
+
+        {{#if message}}
+          <div class="alert alert-info">{{message}}</div>
+        {{/if}}
+        {{#if error}}
+          <div class="alert alert-danger">{{error}}</div>
+        {{/if}}
+
+        <form id="formCrearActividad" action="/admin/actividades" method="POST" novalidate>
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required maxlength="120" placeholder="Ingrese el nombre de la actividad">
+            <div class="invalid-feedback">El nombre es obligatorio.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="4" placeholder="Descripción opcional"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="area" class="form-label">Área <span class="text-danger">*</span></label>
+            <select id="area" name="area" class="form-select" required>
+              <option value="">-- Seleccione un área --</option>
+              {{#each areas}}
+                <option value="{{_id}}">{{nombre}}</option>
+              {{/each}}
+            </select>
+            <div class="invalid-feedback">Seleccione un área.</div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Crear actividad</button>
+            <a href="/admin/actividades" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Validación simple de cliente usando clases Bootstrap
+    (function() {
+      const form = document.getElementById('formCrearActividad');
+      form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+          e.preventDefault();
+          e.stopPropagation();
+          form.classList.add('was-validated');
+        }
+      }, false);
+    })();
+  </script>
+</body>

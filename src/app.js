@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { connectDB } from './config/database.js';
 import authRoutes from './routes/auth.routes.js';
 import {router as datosPersonales} from './routes/datosPersonales.route.js';
-import { router as formularios } from './routes/formularios.routes.js';
+import {router as formularios } from './routes/formularios.routes.js';
 import {router as adminRoutes} from './routes/admin.routes.js';
 import {router as usuarioRouter} from './routes/usuario.routes.js';
 import { verificarToken } from './middlewares/auth.middleware.js';
@@ -22,6 +22,9 @@ const PORT = process.env.PORT || 3000;
 // Para analizar datos de formularios (x-www-form-urlencoded)
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ Para analizar cuerpos JSON
+app.use(express.json());
+
 // Servir archivos estáticos
 app.use(express.static(path.join(process.cwd(), 'public')));
 
@@ -36,14 +39,6 @@ app.engine('handlebars', exphbs.create({
       return JSON.stringify(context);
     },
     eq: (a, b) => a === b,
-    formatDate: (date, formatStr = 'yyyy/MM/dd') => {
-      if (!date) return '';
-      try {
-        return format(new Date(date), formatStr, { locale: es });
-      } catch {
-        return '';
-      }
-    },
     capitalize: (str) => {
       if (typeof str !== 'string' || !str.length) return '';
       return str.charAt(0).toUpperCase() + str.slice(1);

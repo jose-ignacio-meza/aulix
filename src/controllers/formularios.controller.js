@@ -1,6 +1,7 @@
 import FormularioService from '../services/formularios.service.js';
 import * as perspectivasService from '../services/perspectivas.service.js';
 import * as contenidosService from '../services/contenido.service.js';
+import * as propositosService from '../services/proposito.service.js';
 import * as criteriosService from '../services/criterios.service.js';
 import * as modalidadesService from '../services/modalidades.service.js';
 import * as areasService from '../services/area.service.js';
@@ -125,6 +126,8 @@ export const planificacionAnual = async (req, res) => {
     const contenidos = await contenidosService.obtenerContenido();
     const criterios = await criteriosService.getAllCriteriosService();
     const modalidades= await modalidadesService.allModalidades();
+    const propositos = await propositosService.obtenerPropositos();
+
     // Si modalidades es un string, lo parsea a objeto; si ya es objeto, lo deja igual
     let modalidadesParsed;
     if (typeof modalidades === 'string') {
@@ -138,6 +141,7 @@ export const planificacionAnual = async (req, res) => {
         modalidades: modalidadesParsed,
         perspectivas,
         criterios,
+        propositos,
         datos,
         datosDebug: JSON.stringify({contenidos, perspectivas, criterios,modalidadesParsed}, null, 2)
     });
