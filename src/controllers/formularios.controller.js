@@ -3,6 +3,7 @@ import * as perspectivasService from '../services/perspectivas.service.js';
 import * as contenidosService from '../services/contenido.service.js';
 import * as propositosService from '../services/proposito.service.js';
 import * as criteriosService from '../services/criterios.service.js';
+import * as actividadesService from '../services/actividades.service.js';
 import * as modalidadesService from '../services/modalidades.service.js';
 import * as areasService from '../services/area.service.js';
 
@@ -125,6 +126,7 @@ export const planificacionAnual = async (req, res) => {
     const perspectivas = await perspectivasService.getAllPerspectivas();
     const contenidos = await contenidosService.obtenerContenido();
     const criterios = await criteriosService.getAllCriteriosService();
+    const actividades = await actividadesService.obtenerTodasLasActividades();
     const modalidades= await modalidadesService.allModalidades();
     const propositos = await propositosService.obtenerPropositos();
 
@@ -141,6 +143,7 @@ export const planificacionAnual = async (req, res) => {
         modalidades: modalidadesParsed,
         perspectivas,
         criterios,
+        actividades,
         propositos,
         datos,
         datosDebug: JSON.stringify({contenidos, perspectivas, criterios,modalidadesParsed}, null, 2)

@@ -205,6 +205,7 @@
   const perspectivas = {{{json perspectivas}}};
   const propositos = {{{json propositos}}};
   const criterios = {{{json criterios}}};
+  const actividades = {{{json actividades}}}
   const datosInstituciones = {{{json instituciones}}};
 
   // 🔹 Al cargar la página, agregar curso preseleccionado si existe
@@ -295,7 +296,20 @@
     }
   });
  
+  function actualizarDescripcion(select, index, mesIndex) {
+    // obtener el option seleccionado
+    const optionSeleccionada = select.options[select.selectedIndex];
 
+    // obtener su descripción del atributo data-descripcion
+    const descripcion = optionSeleccionada.getAttribute('data-descripcion') || '';
+
+    // encontrar el input correspondiente
+    const inputDescripcion = document.getElementById(`descripcionActividad_${index}_${mesIndex}`);
+
+    // actualizar el valor
+    inputDescripcion.value = descripcion;
+  }
+  
   // Función para agregar un bloque de curso dinámico
   function agregarCurso(index='', idCurso = null, nombreCurso = "", idInstitucion = null) {
     const cursoDiv = document.createElement('div');
@@ -345,6 +359,7 @@
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="propositos" data-activo="false">Propositos</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="observaciones" data-activo="false">Observaciones</button>
           <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="criterios" data-activo="false">Criterios</button>
+          <button type="button" class="comp-toggle btn btn-outline-primary" data-componente="actividades" data-activo="false">Actividades</button>
         </div>
         <div class="componentes-container" id="meses-${index}"></div>
       `;
@@ -467,6 +482,19 @@
           </select>
           </div>`;
 
+        //actividades
+        htmlCompleto += `
+        <div class="componente" data-componente="actividades" style="display:none"> 
+          <label>Actividades</label>
+          <select name="cursos[${index}][meses][${mesIndex}][actividades][]" 
+            onchange="actualizarDescripcion(this, ${index}, ${mesIndex})" >
+            <option value="0" selected>Seleccione una actividada </option>
+            ${actividades.map(a => `<option value="${a._id}" data-descripcion="${a.descripcion}">${a.nombre}</option>`).join('')}
+          </select>
+
+          <textarea name="descripcionActividad" id="descripcionActividad_${index}_${mesIndex}" rows="3" style="width: 100%;" readonly></textarea>
+        </div>`;
+              
         // Observaciones
         htmlCompleto += `
           <div class="componente" data-componente="observaciones" style="display:none">
